@@ -8,7 +8,7 @@ import java.awt.event.ComponentEvent;
 public class MainMenu extends JFrame{
     private JLabel title;
     private JPanel jPanel;
-    private JPanel jButtonPanel;
+    private JPanel buttonPanel;
     private JButton start;
     private JButton exit;
     private JButton settings;
@@ -31,9 +31,8 @@ public class MainMenu extends JFrame{
         separator2.setMaximumSize(new Dimension(100,100));
         separator3.setMaximumSize(new Dimension(100,100));
 
-        jButtonPanel.setLayout(new BoxLayout(jButtonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         buttonResize();
-        separatorSetup();
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -49,8 +48,8 @@ public class MainMenu extends JFrame{
 
     }
     public void buttonResize(){
-        int panel_width = jButtonPanel.getWidth();
-        int panel_height = jButtonPanel.getHeight();
+        int panel_width = buttonPanel.getWidth();
+        int panel_height = buttonPanel.getHeight();
 
         int buttonWidth = (int) (panel_width * 0.30);
         int buttonHeight = (int) (panel_height * 0.06);
@@ -66,17 +65,6 @@ public class MainMenu extends JFrame{
             b.setBorderPainted(false);
             b.setFocusPainted(false);
         }
-    }
-
-    public void separatorSetup(){
-        separator1.setForeground(background_color);
-        separator1.setBackground(background_color);
-
-        separator2.setForeground(background_color);
-        separator2.setBackground(background_color);
-
-        separator3.setForeground(background_color);
-        separator3.setBackground(background_color);
     }
 
 }

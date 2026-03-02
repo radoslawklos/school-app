@@ -28,6 +28,7 @@ public class Settings extends JFrame {
         mainPanel.add(settingsContent, BorderLayout.CENTER);
 
         buttonPanel = new JPanel(new BorderLayout());
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         returnButton = new JButton("Powrót do menu");
         saveButton = new JButton("Zapisz");
 

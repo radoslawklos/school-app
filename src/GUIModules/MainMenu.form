@@ -5,9 +5,7 @@
     <constraints>
       <xy x="20" y="20" width="739" height="400"/>
     </constraints>
-    <properties>
-      <background color="-13399500"/>
-    </properties>
+    <properties/>
     <border type="none"/>
     <children>
       <grid id="66a8" binding="titlePAnel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -15,9 +13,7 @@
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties>
-          <background color="-13399500"/>
-        </properties>
+        <properties/>
         <border type="none"/>
         <children>
           <component id="2b733" class="javax.swing.JLabel" binding="title">
@@ -31,12 +27,11 @@
           </component>
         </children>
       </grid>
-      <grid id="9b797" binding="jButtonPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+      <grid id="9b797" binding="buttonPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <background color="-13399500"/>
           <enabled value="true"/>
         </properties>
         <border type="none"/>
@@ -44,7 +39,6 @@
           <component id="e0ae7" class="javax.swing.JButton" binding="start">
             <constraints/>
             <properties>
-              <font name="JetBrains Mono" size="20" style="1"/>
               <text value="Uruchom"/>
             </properties>
           </component>
@@ -57,7 +51,6 @@
           <component id="686ec" class="javax.swing.JButton" binding="settings">
             <constraints/>
             <properties>
-              <font name="JetBrains Mono" size="20" style="1"/>
               <text value="Ustawienia"/>
             </properties>
           </component>
@@ -70,7 +63,6 @@
           <component id="5387d" class="javax.swing.JButton" binding="exit">
             <constraints/>
             <properties>
-              <font name="JetBrains Mono" size="20" style="1"/>
               <text value="Wyjdź z aplikacji"/>
             </properties>
           </component>
