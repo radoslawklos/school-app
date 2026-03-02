@@ -40,10 +40,17 @@ public class MainMenu extends JFrame{
             }
         });
         setVisible(true);
+
         exit.addActionListener(e -> System.exit(0));
+
         settings.addActionListener(e -> {
             this.dispose();
             new Settings();
+        });
+
+        start.addActionListener(e -> {
+            this.dispose();
+            new AppGUI();
         });
 
     }
