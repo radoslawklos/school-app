@@ -3,8 +3,8 @@ import GUIModules.MainMenu;
 import javax.swing.*;
 import java.awt.*;
 
-public class GUI {
-    public GUI(){
+public class GUIHandler {
+    public GUIHandler(){
         try {
             UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
             UIManager.put("Button.arc", 14);
@@ -27,7 +27,7 @@ public class GUI {
 
             // FONT
             UIManager.put("Button.font", new Font("Segoe UI", Font.BOLD, 26));
-            UIManager.put("Label.font", new Font("Segoe UI", Font.PLAIN, 14));
+            UIManager.put("Label.font", new Font("Segoe UI", Font.BOLD, 45));
 
             // UX
             UIManager.put("Button.arc", 14);

@@ -8,10 +8,12 @@ import java.awt.event.ComponentEvent;
 public class AppGUI extends JFrame {
     private String title_string = "Aplikacja Szkolna";
     private JPanel mainPanel;
+    private JPanel barPanel;
     private JPanel buttonPanel;
     private JPanel appPanel;
+    private JButton teacherButton;
+    private JButton calendarButton;
     private JButton returnButton;
-    private JButton saveButton;
 
     public AppGUI() {
         setTitle(title_string);
@@ -20,22 +22,19 @@ public class AppGUI extends JFrame {
         setSize(800, 600);
         setLocationRelativeTo(null);
 
-        mainPanel = new JPanel(new BorderLayout());
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
 
         JPanel settingsContent = new JPanel();
-        settingsContent.setBackground(new Color(220, 220, 220)); // przykładowe tło
+        settingsContent.setBackground(new Color(220, 220, 220));
         mainPanel.add(settingsContent, BorderLayout.CENTER);
 
-        buttonPanel = new JPanel(new BorderLayout());
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        returnButton = new JButton("Powrót do menu");
-        saveButton = new JButton("Zapisz");
+        barPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        buttonPanel.add(returnButton, BorderLayout.WEST);
-        buttonPanel.add(saveButton, BorderLayout.EAST);
+        barPanel.add(returnButton, BorderLayout.WEST);
+        buttonPanel.add(teacherButton);
+        buttonPanel.add(calendarButton);
 
-
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+        mainPanel.add(barPanel, BorderLayout.SOUTH);
 
         setContentPane(mainPanel);
 
@@ -51,15 +50,11 @@ public class AppGUI extends JFrame {
             new MainMenu();
         });
 
-        saveButton.addActionListener(e -> {
-            System.out.println("Ustawienia zapisane!");
-        });
-
         setVisible(true);
     }
     public void buttonResize(){
-        int panel_width = buttonPanel.getWidth();
-        int panel_height = buttonPanel.getHeight();
+        int panel_width = barPanel.getWidth();
+        int panel_height = barPanel.getHeight();
 
         int buttonWidth = (int) (panel_width * 0.30);
         int buttonHeight = (int) (panel_height * 0.06);
@@ -68,7 +63,7 @@ public class AppGUI extends JFrame {
         buttonHeight = Math.max(50, Math.min(buttonHeight, 100));
 
         Dimension buttonSize = new Dimension(buttonWidth, buttonHeight);
-        for (JButton b : new JButton[]{returnButton, saveButton}) {
+        for (JButton b : new JButton[]{returnButton}) {
             b.setMaximumSize(buttonSize);
             b.setPreferredSize(buttonSize);
             b.setAlignmentX(Component.CENTER_ALIGNMENT);

@@ -6,18 +6,15 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 public class MainMenu extends JFrame{
-    private JLabel title;
-    private JPanel jPanel;
-    private JPanel buttonPanel;
-    private JButton start;
-    private JButton exit;
-    private JButton settings;
-    private JPanel titlePAnel;
     private String title_string = "Aplikacja Szkolna";
-    private JSeparator separator1;
-    private JSeparator separator2;
-    private JSeparator separator3;
-    private Color background_color = new Color(51,138,52);
+    private JLabel title = new JLabel(title_string);
+    private JPanel mainPanel = new JPanel();
+    private JPanel buttonPanel = new JPanel();
+    private JButton start = new JButton("Uruchom");
+    private JButton exit =  new JButton("Wyjdź z aplikacji");
+    private JButton settings =  new JButton("Ustawienia");
+    private JPanel titlePanel = new JPanel();
+
 
     public MainMenu(){
         setTitle(title_string);
@@ -25,13 +22,30 @@ public class MainMenu extends JFrame{
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setSize(800, 600);
         setLocationRelativeTo(null);
-        setContentPane(jPanel);
 
-        separator1.setMaximumSize(new Dimension(100,100));
-        separator2.setMaximumSize(new Dimension(100,100));
-        separator3.setMaximumSize(new Dimension(100,100));
+        this.add(mainPanel);
+
+        mainPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        mainPanel.add(titlePanel, gbc);
+        gbc.gridy++;
+        mainPanel.add(buttonPanel, gbc);
+
+        titlePanel.add(title);
+
 
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        addSpacing(buttonPanel, 200);
+        buttonPanel.add(start);
+        addSpacing(buttonPanel, 20);
+        buttonPanel.add(settings);
+        addSpacing(buttonPanel, 20);
+        buttonPanel.add(exit);
+
         buttonResize();
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -72,6 +86,10 @@ public class MainMenu extends JFrame{
             b.setBorderPainted(false);
             b.setFocusPainted(false);
         }
+    }
+
+    public void addSpacing(JPanel panel, int spacing){
+        panel.add(Box.createRigidArea(new Dimension(0, spacing)));
     }
 
 }

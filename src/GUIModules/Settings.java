@@ -24,7 +24,7 @@ public class Settings extends JFrame {
         mainPanel = new JPanel(new BorderLayout());
 
         JPanel settingsContent = new JPanel();
-        settingsContent.setBackground(new Color(220, 220, 220)); // przykładowe tło
+        settingsContent.setBackground(new Color(220, 220, 220));
         mainPanel.add(settingsContent, BorderLayout.CENTER);
 
         buttonPanel = new JPanel(new BorderLayout());
