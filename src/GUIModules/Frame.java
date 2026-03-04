@@ -19,6 +19,7 @@ public class Frame extends JFrame {
         container.add(new MainMenu(this), "MENU");
         container.add(new Settings(this), "SETTINGS");
         container.add(new AppGUI(this), "APPGUI");
+        container.add(new TeachersGUI(this), "TEACHERS");
 
         add(container);
         setVisible(true);

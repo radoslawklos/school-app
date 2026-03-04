@@ -11,12 +11,14 @@ public class MainMenu extends JPanel{
 
     private String title_string = "Aplikacja Szkolna";
     private JLabel title = new JLabel(title_string);
+
+    private JPanel titlePanel = new JPanel();
     private JPanel mainPanel = new JPanel();
     private JPanel buttonPanel = new JPanel();
+
     private JButton start = new JButton("Uruchom");
     private JButton exit =  new JButton("Wyjdź z aplikacji");
     private JButton settings =  new JButton("Ustawienia");
-    private JPanel titlePanel = new JPanel();
 
 
     public MainMenu(Frame parent){

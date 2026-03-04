@@ -1,38 +1,36 @@
 package GUIModules;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import GUIModules.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import static GUIModules.MainMenu.buttonResize;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
-public class Settings extends JPanel {
+public class TeachersGUI extends JPanel {
 
     private Frame parent;
 
     private JPanel mainPanel = new JPanel();
     private JPanel barPanel = new JPanel();
-    private JPanel settingsPanel = new JPanel();
+    private JPanel teachersPanel = new JPanel();
 
     private JButton returnButton = new JButton("Powrót");
-    private JButton saveButton = new JButton("Zapisz");
+    private JButton addButton = new JButton("Dodaj Nauczyciela");
 
-    public Settings(Frame parent) {
+    public  TeachersGUI(Frame parent) {
         this.parent = parent;
 
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
 
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        settingsPanel.setBorder(new LineBorder(new Color(245, 245, 245), 20));
-        settingsPanel.setBackground(new Color(224, 224, 224));
+        teachersPanel.setBorder(new LineBorder(new Color(245, 245, 245), 20));
+        teachersPanel.setBackground(new Color(224, 224, 224));
 
         mainPanel.setLayout(new BorderLayout());
-        mainPanel.add(settingsPanel, BorderLayout.CENTER);
+        mainPanel.add(teachersPanel, BorderLayout.CENTER);
         mainPanel.add(barPanel, BorderLayout.SOUTH);
 
 
@@ -50,22 +48,22 @@ public class Settings extends JPanel {
         gbc.gridy = 0;
         gbc.weightx = 1;
         gbc.anchor = GridBagConstraints.EAST;
-        barPanel.add(saveButton, gbc);
+        barPanel.add(addButton, gbc);
 
         returnButton.setPreferredSize(new Dimension(200, 60));
         returnButton.setMaximumSize(new Dimension(200, 60));
         returnButton.setFocusPainted(false);
 
-        saveButton.setPreferredSize(new Dimension(200, 60));
-        saveButton.setMaximumSize(new Dimension(200, 60));
-        saveButton.setFocusPainted(false);
+        addButton.setPreferredSize(new Dimension(200, 60));
+        addButton.setMaximumSize(new Dimension(200, 60));
+        addButton.setFocusPainted(false);
 
-        MainMenu.buttonResize(barPanel, new JButton[]{returnButton, saveButton});
+        MainMenu.buttonResize(barPanel, new JButton[]{returnButton, addButton});
 
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                MainMenu.buttonResize(barPanel, new JButton[]{returnButton, saveButton});
+                MainMenu.buttonResize(barPanel, new JButton[]{returnButton, addButton});
             }
         });
 
@@ -73,10 +71,11 @@ public class Settings extends JPanel {
             parent.showCard("MENU");
         });
 
-        saveButton.addActionListener(e -> {
+        addButton.addActionListener(e -> {
             //TODO popraw litener
         });
 
         setVisible(true);
     }
+
 }

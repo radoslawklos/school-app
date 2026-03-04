@@ -77,6 +77,10 @@ public class AppGUI extends JPanel {
             parent.showCard("MENU");
         });
 
+        teacherButton.addActionListener(e -> {
+            parent.showCard("TEACHERS");
+        });
+
         setVisible(true);
     }
 }
