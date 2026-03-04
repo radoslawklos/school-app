@@ -1,16 +1,11 @@
 package GUIModules;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import GUIModules.*;
 
-import static GUIModules.MainMenu.buttonResize;
-
-public class AppGUI extends JPanel {
+public class SelectionGUI extends JPanel {
 
     private Frame parent;
 
@@ -23,7 +18,7 @@ public class AppGUI extends JPanel {
     private JButton calendarButton =  new JButton("Kalendarz");
     private JButton returnButton = new JButton("Powrót");
 
-    public AppGUI(Frame parent) {
+    public SelectionGUI(Frame parent) {
 
         this.parent = parent;
 

@@ -68,7 +68,7 @@ public class TeachersGUI extends JPanel {
         });
 
         returnButton.addActionListener(e -> {
-            parent.showCard("MENU");
+            parent.showCard("SELECT");
         });
 
         addButton.addActionListener(e -> {

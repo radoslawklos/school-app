@@ -18,7 +18,7 @@ public class Frame extends JFrame {
 
         container.add(new MainMenu(this), "MENU");
         container.add(new Settings(this), "SETTINGS");
-        container.add(new AppGUI(this), "APPGUI");
+        container.add(new SelectionGUI(this), "SELECT");
         container.add(new TeachersGUI(this), "TEACHERS");
 
         add(container);

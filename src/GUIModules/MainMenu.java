@@ -65,7 +65,7 @@ public class MainMenu extends JPanel{
         });
 
         start.addActionListener(e -> {
-            parent.showCard("APPGUI");
+            parent.showCard("SELECT");
         });
 
     }
