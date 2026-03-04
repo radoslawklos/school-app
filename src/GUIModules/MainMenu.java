@@ -47,11 +47,11 @@ public class MainMenu extends JPanel{
         addSpacing(buttonPanel, 20);
         buttonPanel.add(exit);
 
-        buttonResize();
+        buttonResize(buttonPanel, new JButton[]{start, settings, exit});
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                buttonResize();
+                buttonResize(buttonPanel, new JButton[]{start, settings, exit});
             }
         });
         setVisible(true);
@@ -67,9 +67,9 @@ public class MainMenu extends JPanel{
         });
 
     }
-    public void buttonResize(){
-        int panel_width = buttonPanel.getWidth();
-        int panel_height = buttonPanel.getHeight();
+    public static void buttonResize(JPanel panelForSize, JButton [] buttons){
+        int panel_width = panelForSize.getWidth();
+        int panel_height = panelForSize.getHeight();
 
         int buttonWidth = (int) (panel_width * 0.30);
         int buttonHeight = (int) (panel_height * 0.06);
@@ -78,7 +78,7 @@ public class MainMenu extends JPanel{
         buttonHeight = Math.max(100, Math.min(buttonHeight, 200));
 
         Dimension buttonSize = new Dimension(buttonWidth, buttonHeight);
-        for (JButton b : new JButton[]{start, settings, exit}) {
+        for (JButton b : buttons) {
             b.setMaximumSize(buttonSize);
             b.setPreferredSize(buttonSize);
             b.setAlignmentX(Component.CENTER_ALIGNMENT);

@@ -8,11 +8,12 @@ import GUIModules.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import static GUIModules.MainMenu.buttonResize;
+
 public class Settings extends JPanel {
 
     private Frame parent;
 
-    private String title_string = "Aplikacja Szkolna";
     private JPanel mainPanel = new JPanel();
     private JPanel barPanel = new JPanel();
     private JPanel settingsPanel = new JPanel();
@@ -34,11 +35,38 @@ public class Settings extends JPanel {
         mainPanel.add(barPanel, BorderLayout.SOUTH);
 
 
-        barPanel.setLayout(new BorderLayout());
-        barPanel.add(returnButton, BorderLayout.WEST);
-        barPanel.add(saveButton, BorderLayout.EAST);
+        barPanel.setLayout(new GridBagLayout());
+        barPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        buttonResize();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        barPanel.add(returnButton, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weightx = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        barPanel.add(saveButton, gbc);
+
+        returnButton.setPreferredSize(new Dimension(200, 60));
+        returnButton.setMaximumSize(new Dimension(200, 60));
+        returnButton.setFocusPainted(false);
+
+        saveButton.setPreferredSize(new Dimension(200, 60));
+        saveButton.setMaximumSize(new Dimension(200, 60));
+        saveButton.setFocusPainted(false);
+
+        MainMenu.buttonResize(barPanel, new JButton[]{returnButton, saveButton});
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                MainMenu.buttonResize(barPanel, new JButton[]{returnButton, saveButton});
+            }
+        });
 
         returnButton.addActionListener(e -> {
             parent.showCard("MENU");
@@ -49,24 +77,5 @@ public class Settings extends JPanel {
         });
 
         setVisible(true);
-    }
-    public void buttonResize(){
-        int panel_width = barPanel.getWidth();
-        int panel_height = barPanel.getHeight();
-
-        int buttonWidth = (int) (panel_width * 0.30);
-        int buttonHeight = (int) (panel_height * 0.06);
-
-        buttonWidth = Math.max(200, Math.min(buttonWidth, 300));
-        buttonHeight = Math.max(50, Math.min(buttonHeight, 100));
-
-        Dimension buttonSize = new Dimension(buttonWidth, buttonHeight);
-        for (JButton b : new JButton[]{returnButton, saveButton}) {
-            b.setMaximumSize(buttonSize);
-            b.setPreferredSize(buttonSize);
-            b.setAlignmentX(Component.CENTER_ALIGNMENT);
-            b.setBorderPainted(false);
-            b.setFocusPainted(false);
-        }
     }
 }

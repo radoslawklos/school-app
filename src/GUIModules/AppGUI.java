@@ -8,14 +8,17 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import GUIModules.*;
 
+import static GUIModules.MainMenu.buttonResize;
+
 public class AppGUI extends JPanel {
 
     private Frame parent;
 
-    private String title_string = "Aplikacja Szkolna";
     private JPanel mainPanel =  new JPanel();
     private JPanel barPanel =  new JPanel();
     private JPanel buttonPanel =  new JPanel();
+    private JPanel centerPanel =  new JPanel();
+
     private JButton teacherButton = new JButton("Nauczyciele");
     private JButton calendarButton =  new JButton("Kalendarz");
     private JButton returnButton = new JButton("Powrót");
@@ -28,27 +31,45 @@ public class AppGUI extends JPanel {
         add(mainPanel, BorderLayout.CENTER);
 
         mainPanel.setLayout(new BorderLayout());
-        mainPanel.add(buttonPanel, BorderLayout.CENTER);
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
         mainPanel.add(barPanel, BorderLayout.SOUTH);
+
+        centerPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(20, 10, 20, 10);
+
+        centerPanel.add(buttonPanel, gbc);
 
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+
         buttonPanel.add(teacherButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         buttonPanel.add(calendarButton);
 
+        barPanel.setLayout(new GridBagLayout());
         barPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        barPanel.add(returnButton, BorderLayout.WEST);
-        buttonPanel.add(teacherButton);
-        buttonPanel.add(calendarButton);
+        GridBagConstraints gbcBar = new GridBagConstraints();
+        gbcBar.gridx = 1;
+        gbcBar.gridy = 0;
+        gbcBar.anchor = GridBagConstraints.SOUTHWEST;
+        gbcBar.weightx = 1;
+        gbcBar.weighty = 1;
 
-        mainPanel.add(barPanel, BorderLayout.SOUTH);
+        returnButton.setPreferredSize(new Dimension(200, 60));
+        returnButton.setMaximumSize(new Dimension(200, 60));
+        returnButton.setFocusPainted(false);
 
-        buttonResize();
+        barPanel.add(returnButton, gbcBar);
+
+        MainMenu.buttonResize(centerPanel, new JButton[]{calendarButton,  teacherButton});
 
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                buttonResize();
+                MainMenu.buttonResize(centerPanel, new JButton[]{calendarButton,  teacherButton});
             }
         });
 
@@ -57,24 +78,5 @@ public class AppGUI extends JPanel {
         });
 
         setVisible(true);
-    }
-    public void buttonResize(){
-        int panel_width = barPanel.getWidth();
-        int panel_height = barPanel.getHeight();
-
-        int buttonWidth = (int) (panel_width * 0.30);
-        int buttonHeight = (int) (panel_height * 0.06);
-
-        buttonWidth = Math.max(200, Math.min(buttonWidth, 300));
-        buttonHeight = Math.max(50, Math.min(buttonHeight, 100));
-
-        Dimension buttonSize = new Dimension(buttonWidth, buttonHeight);
-        for (JButton b : new JButton[]{returnButton, teacherButton, calendarButton}) {
-            b.setMaximumSize(buttonSize);
-            b.setPreferredSize(buttonSize);
-            b.setAlignmentX(Component.CENTER_ALIGNMENT);
-            b.setBorderPainted(false);
-            b.setFocusPainted(false);
-        }
     }
 }
