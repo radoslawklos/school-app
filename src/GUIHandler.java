@@ -1,3 +1,4 @@
+import GUIModules.Frame;
 import GUIModules.MainMenu;
 
 import javax.swing.*;
@@ -36,6 +37,6 @@ public class GUIHandler {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        SwingUtilities.invokeLater(MainMenu::new);
+        SwingUtilities.invokeLater(Frame::new);
     }
 }

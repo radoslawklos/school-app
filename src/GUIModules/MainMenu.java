@@ -5,7 +5,10 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
-public class MainMenu extends JFrame{
+public class MainMenu extends JPanel{
+
+    private Frame parent;
+
     private String title_string = "Aplikacja Szkolna";
     private JLabel title = new JLabel(title_string);
     private JPanel mainPanel = new JPanel();
@@ -16,14 +19,12 @@ public class MainMenu extends JFrame{
     private JPanel titlePanel = new JPanel();
 
 
-    public MainMenu(){
-        setTitle(title_string);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setSize(800, 600);
-        setLocationRelativeTo(null);
+    public MainMenu(Frame parent){
 
-        this.add(mainPanel);
+        this.parent = parent;
+
+        setLayout(new BorderLayout());
+        add(mainPanel, BorderLayout.CENTER);
 
         mainPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -58,13 +59,11 @@ public class MainMenu extends JFrame{
         exit.addActionListener(e -> System.exit(0));
 
         settings.addActionListener(e -> {
-            this.dispose();
-            new Settings();
+            parent.showCard("SETTINGS");
         });
 
         start.addActionListener(e -> {
-            this.dispose();
-            new AppGUI();
+            parent.showCard("APPGUI");
         });
 
     }

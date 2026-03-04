@@ -6,8 +6,12 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import GUIModules.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
-public class Settings extends JFrame {
+public class Settings extends JPanel {
+
+    private Frame parent;
+
     private String title_string = "Aplikacja Szkolna";
     private JPanel mainPanel = new JPanel();
     private JPanel barPanel = new JPanel();
@@ -15,15 +19,15 @@ public class Settings extends JFrame {
     private JButton returnButton = new JButton("Powrót");
     private JButton saveButton = new JButton("Zapisz");
 
-    public Settings() {
-        setTitle(title_string);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setLocationRelativeTo(null);
-        setSize(800, 600);
+    public Settings(Frame parent) {
+        this.parent = parent;
 
-        this.add(mainPanel);
+        setLayout(new BorderLayout());
+        add(mainPanel, BorderLayout.CENTER);
+
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        settingsPanel.setBorder(new LineBorder(new Color(245, 245, 245), 20));
+        settingsPanel.setBackground(new Color(224, 224, 224));
 
         mainPanel.setLayout(new BorderLayout());
         mainPanel.add(settingsPanel, BorderLayout.CENTER);
@@ -37,12 +41,11 @@ public class Settings extends JFrame {
         buttonResize();
 
         returnButton.addActionListener(e -> {
-            dispose();
-            new MainMenu();
+            parent.showCard("MENU");
         });
 
         saveButton.addActionListener(e -> {
-            System.out.println("Ustawienia zapisane!");
+            //TODO popraw litener
         });
 
         setVisible(true);

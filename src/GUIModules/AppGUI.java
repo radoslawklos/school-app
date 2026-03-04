@@ -1,32 +1,39 @@
 package GUIModules;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import GUIModules.*;
 
-public class AppGUI extends JFrame {
+public class AppGUI extends JPanel {
+
+    private Frame parent;
+
     private String title_string = "Aplikacja Szkolna";
-    private JPanel mainPanel;
-    private JPanel barPanel;
-    private JPanel buttonPanel;
-    private JPanel appPanel;
-    private JButton teacherButton;
-    private JButton calendarButton;
-    private JButton returnButton;
+    private JPanel mainPanel =  new JPanel();
+    private JPanel barPanel =  new JPanel();
+    private JPanel buttonPanel =  new JPanel();
+    private JButton teacherButton = new JButton("Nauczyciele");
+    private JButton calendarButton =  new JButton("Kalendarz");
+    private JButton returnButton = new JButton("Powrót");
 
-    public AppGUI() {
-        setTitle(title_string);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setSize(800, 600);
-        setLocationRelativeTo(null);
+    public AppGUI(Frame parent) {
+
+        this.parent = parent;
+
+        setLayout(new BorderLayout());
+        add(mainPanel, BorderLayout.CENTER);
+
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.add(buttonPanel, BorderLayout.CENTER);
+        mainPanel.add(barPanel, BorderLayout.SOUTH);
 
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-
-        JPanel settingsContent = new JPanel();
-        settingsContent.setBackground(new Color(220, 220, 220));
-        mainPanel.add(settingsContent, BorderLayout.CENTER);
+        buttonPanel.add(teacherButton);
+        buttonPanel.add(calendarButton);
 
         barPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
@@ -36,7 +43,7 @@ public class AppGUI extends JFrame {
 
         mainPanel.add(barPanel, BorderLayout.SOUTH);
 
-        setContentPane(mainPanel);
+        buttonResize();
 
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -46,8 +53,7 @@ public class AppGUI extends JFrame {
         });
 
         returnButton.addActionListener(e -> {
-            dispose();
-            new MainMenu();
+            parent.showCard("MENU");
         });
 
         setVisible(true);
@@ -63,7 +69,7 @@ public class AppGUI extends JFrame {
         buttonHeight = Math.max(50, Math.min(buttonHeight, 100));
 
         Dimension buttonSize = new Dimension(buttonWidth, buttonHeight);
-        for (JButton b : new JButton[]{returnButton}) {
+        for (JButton b : new JButton[]{returnButton, teacherButton, calendarButton}) {
             b.setMaximumSize(buttonSize);
             b.setPreferredSize(buttonSize);
             b.setAlignmentX(Component.CENTER_ALIGNMENT);
