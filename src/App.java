@@ -7,8 +7,8 @@ import java.util.List;
 
 public class App {
     public static void main(String[] args) {
-        //GUIHandler guiHandler = new GUIHandler();
-        TeacherManager tm1 = new TeacherManager();
+        GUIHandler guiHandler = new GUIHandler();
+//        TeacherManager tm1 = new TeacherManager();
 //        List<String> restrictions1 = Arrays.asList("Monday morning", "Friday afternoon");
 //        List<String> restrictions2 = Arrays.asList("Wednesday", "Thursday morning");
 //        List<String> restrictions3 = Arrays.asList("Tuesday afternoon");
@@ -23,6 +23,6 @@ public class App {
 //        tm1.saveTeachers();
         TeacherManager tm2 = new TeacherManager();
         tm2.loadTeachers();
-        System.out.println(tm2.getTeachers());
+//        System.out.println(tm2.getTeachers());
     }
 }

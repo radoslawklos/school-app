@@ -23,6 +23,53 @@ public class Teacher implements Serializable {
         teacherManager.addTeacher(this);
     }
 
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public Double getFTE() {
+        return FTE;
+    }
+
+    public void setFTE(Double FTE) {
+        this.FTE = FTE;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
+
+    public List<String> getRestrictions() {
+        return restrictions;
+    }
+
+    public void setRestrictions(List<String> restrictions) {
+        this.restrictions = restrictions;
+    }
 
     @Override
     public String toString() {

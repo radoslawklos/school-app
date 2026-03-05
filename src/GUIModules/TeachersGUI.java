@@ -1,12 +1,19 @@
 package GUIModules;
 
+import DataModules.Teacher;
+import DataModules.TeacherManager;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.List;
 
 public class TeachersGUI extends JPanel {
 
@@ -19,6 +26,10 @@ public class TeachersGUI extends JPanel {
     private JButton returnButton = new JButton("Powrót");
     private JButton addButton = new JButton("Dodaj Nauczyciela");
 
+    private JTable teachersTable = new JTable();
+
+    private TeacherManager teacherManager = new TeacherManager();
+
     public  TeachersGUI(Frame parent) {
         this.parent = parent;
 
@@ -26,6 +37,7 @@ public class TeachersGUI extends JPanel {
         add(mainPanel, BorderLayout.CENTER);
 
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        teachersPanel.setLayout(new BorderLayout());
         teachersPanel.setBorder(new LineBorder(new Color(245, 245, 245), 20));
         teachersPanel.setBackground(new Color(224, 224, 224));
 
@@ -60,6 +72,19 @@ public class TeachersGUI extends JPanel {
 
         MainMenu.buttonResize(barPanel, new JButton[]{returnButton, addButton});
 
+        transferTeachers();
+        JScrollPane scrollPane = new JScrollPane(teachersTable);
+        teachersTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        teachersTable.setFont(new Font("Arial", Font.PLAIN, 16));
+        teachersTable.setRowHeight(24);
+        teachersTable.setShowGrid(true);
+        teachersTable.setGridColor(Color.BLACK);
+
+        changeHeader(teachersTable);
+        teachersTable.getTableHeader().setReorderingAllowed(false);
+
+        teachersPanel.add(scrollPane, BorderLayout.CENTER);
+
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -68,6 +93,8 @@ public class TeachersGUI extends JPanel {
         });
 
         returnButton.addActionListener(e -> {
+            updateTeachersFromTable();
+            teacherManager.saveTeachers();
             parent.showCard("SELECT");
         });
 
@@ -75,7 +102,63 @@ public class TeachersGUI extends JPanel {
             //TODO popraw litener
         });
 
+        teachersTable.getModel().addTableModelListener(e -> {
+            updateTeachersFromTable();
+            teacherManager.saveTeachers();
+        });
+
         setVisible(true);
     }
 
+    public void transferTeachers() {
+        this.teacherManager.loadTeachers();
+        List<Teacher>  teachers = teacherManager.getTeachers();
+        String[] columnNames = {
+                "ID",
+                "Name",
+                "Surname",
+                "FTE",
+                "Available",
+                "Restrictions"
+        };
+
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return true;
+            }
+        };
+        for(Teacher teacher : teachers) {
+            model.addRow(new Object[]{teacher.getID(), teacher.getName(), teacher.getSurname(),teacher.getFTE(), teacher.isAvailable(), teacher.getRestrictions()});
+        }
+        teachersTable.setModel(model);
+    }
+
+    public void changeHeader(JTable teachersTable) {
+        JTableHeader header = teachersTable.getTableHeader();
+
+        DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
+        headerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        headerRenderer.setFont(new Font("Arial", Font.BOLD, 16));
+        headerRenderer.setBorder(new LineBorder(Color.BLACK));
+        headerRenderer.setOpaque(true);
+        headerRenderer.setBackground(new Color(230, 230, 230));
+
+        for (int i = 0; i < teachersTable.getColumnCount(); i++) {
+            teachersTable.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
+        }
+        header.repaint();
+    }
+
+    public void updateTeachersFromTable() {
+        for (int i = 0; i < teachersTable.getRowCount(); i++) {
+            Teacher t = teacherManager.getTeachers().get(i);
+            t.setID((String) teachersTable.getValueAt(i, 0));
+            t.setName((String) teachersTable.getValueAt(i, 1));
+            t.setSurname((String) teachersTable.getValueAt(i, 2));
+            t.setFTE((Double) teachersTable.getValueAt(i, 3));
+            t.setAvailable((Boolean) teachersTable.getValueAt(i, 4));
+            t.setRestrictions((List<String>) teachersTable.getValueAt(i, 5));
+        }
+    }
 }
