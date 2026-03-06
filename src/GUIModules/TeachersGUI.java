@@ -115,11 +115,11 @@ public class TeachersGUI extends JPanel {
         List<Teacher>  teachers = teacherManager.getTeachers();
         String[] columnNames = {
                 "ID",
-                "Name",
-                "Surname",
-                "FTE",
-                "Available",
-                "Restrictions"
+                "Imię",
+                "Nazwisko",
+                "Wymiar etatu",
+                "Dostępność",
+                "Ograniczenia"
         };
 
         DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
