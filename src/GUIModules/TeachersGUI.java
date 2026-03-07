@@ -27,6 +27,7 @@ public class TeachersGUI extends JPanel {
     private JButton addButton = new JButton("Dodaj Nauczyciela");
 
     private JTable teachersTable = new JTable();
+    private DefaultTableModel tableModel;
 
     private TeacherManager teacherManager = new TeacherManager();
 
@@ -72,8 +73,15 @@ public class TeachersGUI extends JPanel {
 
         MainMenu.buttonResize(barPanel, new JButton[]{returnButton, addButton});
 
-        transferTeachers();
         JScrollPane scrollPane = new JScrollPane(teachersTable);
+        String[] columnNames = {"ID", "Imię", "Nazwisko", "Wymiar etatu", "Dostępność", "Ograniczenia"};
+        tableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return true;
+            }
+        };
+        teachersTable.setModel(tableModel);
         teachersTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         teachersTable.setFont(new Font("Arial", Font.PLAIN, 16));
         teachersTable.setRowHeight(24);
@@ -83,7 +91,9 @@ public class TeachersGUI extends JPanel {
         changeHeader(teachersTable);
         teachersTable.getTableHeader().setReorderingAllowed(false);
 
-        teachersPanel.add(scrollPane, BorderLayout.CENTER);
+        teachersPanel.add(new JScrollPane(teachersTable), BorderLayout.CENTER);
+
+        transferTeachers();
 
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -99,7 +109,8 @@ public class TeachersGUI extends JPanel {
         });
 
         addButton.addActionListener(e -> {
-            //TODO popraw litener
+            TeacherForm form = new TeacherForm(this.parent, this.teacherManager, this);
+            form.setVisible(true);
         });
 
         teachersTable.getModel().addTableModelListener(e -> {
@@ -111,27 +122,20 @@ public class TeachersGUI extends JPanel {
     }
 
     public void transferTeachers() {
-        this.teacherManager.loadTeachers();
-        List<Teacher>  teachers = teacherManager.getTeachers();
-        String[] columnNames = {
-                "ID",
-                "Imię",
-                "Nazwisko",
-                "Wymiar etatu",
-                "Dostępność",
-                "Ograniczenia"
-        };
+        tableModel.setRowCount(0);
+        teacherManager.loadTeachers();
+        List<Teacher> teachers = teacherManager.getTeachers();
 
-        DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return true;
-            }
-        };
-        for(Teacher teacher : teachers) {
-            model.addRow(new Object[]{teacher.getID(), teacher.getName(), teacher.getSurname(),teacher.getFTE(), teacher.isAvailable(), teacher.getRestrictions()});
+        for (Teacher teacher : teachers) {
+            tableModel.addRow(new Object[]{
+                    teacher.getID(),
+                    teacher.getName(),
+                    teacher.getSurname(),
+                    teacher.getFTE(),
+                    teacher.isAvailable(),
+                    teacher.getRestrictions()
+            });
         }
-        teachersTable.setModel(model);
     }
 
     public void changeHeader(JTable teachersTable) {

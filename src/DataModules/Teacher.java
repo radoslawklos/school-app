@@ -13,14 +13,13 @@ public class Teacher implements Serializable {
     public boolean available;
     public List<String> restrictions;
 
-    public Teacher(String ID, String name, String surname, Double FTE, boolean available, List<String> restrictions, TeacherManager teacherManager) {
+    public Teacher(String ID, String name, String surname, Double FTE, boolean available, List<String> restrictions) {
         this.ID = ID;
         this.name = name;
         this.surname = surname;
         this.FTE = FTE;
         this.available = available;
         this.restrictions = restrictions;
-        teacherManager.addTeacher(this);
     }
 
     public String getID() {
