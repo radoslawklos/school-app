@@ -17,7 +17,7 @@ public class TeacherForm extends JDialog {
     private JTextField nameField = new JTextField(15);
     private JTextField surnameField = new JTextField(15);
     private JTextField fteField = new JTextField(15);
-    private JCheckBox availableBox = new JCheckBox("Available");
+    private JCheckBox availableBox = new JCheckBox("Dostępny");
     private JTextField restrictionsField = new JTextField(15);
 
     private JPanel mainPanel = new JPanel();
