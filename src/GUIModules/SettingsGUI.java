@@ -16,6 +16,7 @@ public class SettingsGUI extends JPanel {
     private JPanel mainPanel = new JPanel();
     private JPanel barPanel = new JPanel();
     private JPanel settingsPanel = new JPanel();
+    private JPanel settingsContainer = new JPanel();
 
     private JButton returnButton = new JButton("Powrót");
     private JButton saveButton = new JButton("Zapisz");
@@ -33,8 +34,22 @@ public class SettingsGUI extends JPanel {
         settingsPanel.setBorder(new LineBorder(new Color(245, 245, 245), 20));
         settingsPanel.setBackground(new Color(224, 224, 224));
 
+        settingsContainer.setLayout(new GridBagLayout());
+        GridBagConstraints containerGbc = new GridBagConstraints();
+        containerGbc.gridx = 0;
+        containerGbc.gridy = 0;
+        containerGbc.anchor = GridBagConstraints.NORTH;
+        containerGbc.weightx = 1;
+        containerGbc.weighty = 0;
+        settingsContainer.add(settingsPanel, containerGbc);
+
+        JScrollPane settingsScrollPane = new JScrollPane(settingsContainer);
+        settingsScrollPane.setBorder(null);
+        settingsScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        settingsScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
         mainPanel.setLayout(new BorderLayout());
-        mainPanel.add(settingsPanel, BorderLayout.CENTER);
+        mainPanel.add(settingsScrollPane, BorderLayout.CENTER);
         mainPanel.add(barPanel, BorderLayout.SOUTH);
 
 
@@ -65,6 +80,7 @@ public class SettingsGUI extends JPanel {
         MainMenu.buttonResize(barPanel, new JButton[]{returnButton, saveButton});
 
         settingsPanel.setLayout(new GridBagLayout());
+        settingsPanel.setPreferredSize(new Dimension(600, 150));
         GridBagConstraints gbc2 = new GridBagConstraints();
         gbc2.insets = new Insets(10, 10, 10, 10);
         gbc2.gridx = 0;

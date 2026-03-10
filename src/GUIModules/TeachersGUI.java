@@ -26,6 +26,7 @@ public class TeachersGUI extends JPanel {
 
     private JButton returnButton = new JButton("Powrót");
     private JButton addButton = new JButton("Dodaj Nauczyciela");
+    private JButton deleteButton = new JButton("Usuń nauczyciela");
 
     private JTable teachersTable = new JTable();
     private DefaultTableModel tableModel;
@@ -62,6 +63,12 @@ public class TeachersGUI extends JPanel {
 
         gbc.gridx = 1;
         gbc.gridy = 0;
+        gbc.weightx = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        barPanel.add(deleteButton, gbc);
+
+        gbc.gridx = 2;
+        gbc.gridy = 0;
         gbc.weightx = 1;
         gbc.anchor = GridBagConstraints.EAST;
         barPanel.add(addButton, gbc);
@@ -74,14 +81,18 @@ public class TeachersGUI extends JPanel {
         addButton.setMaximumSize(new Dimension(200, 60));
         addButton.setFocusPainted(false);
 
-        MainMenu.buttonResize(barPanel, new JButton[]{returnButton, addButton});
+        deleteButton.setPreferredSize(new Dimension(200, 60));
+        deleteButton.setMaximumSize(new Dimension(200, 60));
+        deleteButton.setFocusPainted(false);
+
+        MainMenu.buttonResize(barPanel, new JButton[]{returnButton, deleteButton, addButton});
 
         JScrollPane scrollPane = new JScrollPane(teachersTable);
         String[] columnNames = {"ID", "Imię", "Nazwisko", "Wymiar etatu", "Dostępność", "Ograniczenia", "Godziny Pracy", "Minuty dyżurów", "Pozostałe minuty dyżurów"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return true;
+                return false;
             }
         };
         teachersTable.setModel(tableModel);
@@ -101,7 +112,7 @@ public class TeachersGUI extends JPanel {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                MainMenu.buttonResize(barPanel, new JButton[]{returnButton, addButton});
+                MainMenu.buttonResize(barPanel, new JButton[]{returnButton, deleteButton, addButton});
             }
         });
 
@@ -114,6 +125,21 @@ public class TeachersGUI extends JPanel {
         addButton.addActionListener(e -> {
             TeacherForm form = new TeacherForm(this.parent, this.teacherManager, this, this.settingsManager);
             form.setVisible(true);
+        });
+
+        deleteButton.addActionListener(e -> {
+            deleteSelectedTeacher();
+        });
+
+        // Also allow Delete key to remove selected teacher
+        InputMap inputMap = teachersTable.getInputMap(JComponent.WHEN_FOCUSED);
+        ActionMap actionMap = teachersTable.getActionMap();
+        inputMap.put(KeyStroke.getKeyStroke("DELETE"), "deleteTeacher");
+        actionMap.put("deleteTeacher", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                deleteSelectedTeacher();
+            }
         });
 
         teachersTable.getModel().addTableModelListener(e -> {
@@ -173,5 +199,48 @@ public class TeachersGUI extends JPanel {
             t.setDutyMinutes((Double) teachersTable.getValueAt(i, 7));
             t.setRemainingDutyMinutes((Double) teachersTable.getValueAt(i, 8));
         }
+    }
+
+    private void deleteSelectedTeacher() {
+        int selectedRow = teachersTable.getSelectedRow();
+        if (selectedRow == -1) {
+            return;
+        }
+
+        JLabel messageLabel = new JLabel("Czy na pewno chcesz usunąć wybranego nauczyciela?");
+        messageLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        Font oldButtonFont = UIManager.getFont("OptionPane.buttonFont");
+        UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.BOLD, 14));
+
+        int confirm;
+        try {
+            String[] options = {"Tak", "Nie"};
+
+            confirm = JOptionPane.showOptionDialog(
+                    this,
+                    messageLabel,
+                    "Potwierdź usunięcie",
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.WARNING_MESSAGE,
+                    null,
+                    options,
+                    options[0]
+            );
+
+        } finally {
+            UIManager.put("OptionPane.buttonFont", oldButtonFont);
+        }
+
+        if (confirm != 0) {
+            return;
+        }
+
+        if (selectedRow >= 0 && selectedRow < teacherManager.getTeachers().size()) {
+            teacherManager.getTeachers().remove(selectedRow);
+        }
+
+        tableModel.removeRow(selectedRow);
+        teacherManager.saveTeachers();
     }
 }
