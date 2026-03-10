@@ -1,17 +1,16 @@
 package GUIModules;
 
+import DataModules.SettingsManager;
 import DataModules.Teacher;
 import DataModules.TeacherManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class TeacherForm extends JDialog {
     private TeacherManager teacherManager;
     private TeachersGUI teachersGUI;
+    private SettingsManager settingsManager;
 
     private JTextField idField = new JTextField(15);
     private JTextField nameField = new JTextField(15);
@@ -19,6 +18,8 @@ public class TeacherForm extends JDialog {
     private JTextField fteField = new JTextField(15);
     private JCheckBox availableBox = new JCheckBox("Dostępny");
     private JTextField restrictionsField = new JTextField(15);
+    private JSpinner workHoursField = new JSpinner(new SpinnerNumberModel(0, 0, null, 1));
+
 
     private JPanel mainPanel = new JPanel();
     private JPanel buttonPanel = new JPanel();
@@ -26,11 +27,12 @@ public class TeacherForm extends JDialog {
     private JButton saveButton = new JButton("Save");
     private JButton cancelButton = new JButton("Cancel");
 
-    public TeacherForm(Frame parent, TeacherManager teacherManager, TeachersGUI teachersGUI) {
+    public TeacherForm(Frame parent, TeacherManager teacherManager, TeachersGUI teachersGUI, SettingsManager settingsManager) {
         super(parent, "Dodaj nauczyciela", true);
 
         this.teacherManager = teacherManager;
         this.teachersGUI = teachersGUI;
+        this.settingsManager = settingsManager;
 
         setLayout(new BorderLayout());
 
@@ -51,12 +53,14 @@ public class TeacherForm extends JDialog {
         JLabel fteLabel = new JLabel("Wymiar etatu:");
         JLabel availableLabel = new JLabel("Dostępność:");
         JLabel restrictionsLabel = new JLabel("Ograniczenia:");
+        JLabel workHoursLabel = new JLabel("Godziny pracy:");
         idLabel.setFont(formFont);
         nameLabel.setFont(formFont);
         surnameLabel.setFont(formFont);
         fteLabel.setFont(formFont);
         availableLabel.setFont(formFont);
         restrictionsLabel.setFont(formFont);
+        workHoursLabel.setFont(formFont);
         availableBox.setFont(formFont);
 
         gbc.gridx = 0;
@@ -101,6 +105,13 @@ public class TeacherForm extends JDialog {
         gbc.gridx = 1;
         mainPanel.add(restrictionsField, gbc);
 
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        mainPanel.add(workHoursLabel, gbc);
+
+        gbc.gridx = 1;
+        mainPanel.add(workHoursField, gbc);
+
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
 
         GridBagConstraints gbcButtons = new GridBagConstraints();
@@ -122,17 +133,20 @@ public class TeacherForm extends JDialog {
         cancelButton.setFocusPainted(false);
 
         saveButton.addActionListener(e -> {
+            int minutesPerWorkHour = settingsManager.getSettings().getDutyMinutesPerWorkHour();
+            double workHours = ((Number) workHoursField.getValue()).doubleValue();
+            double dutyMinutes = workHours * minutesPerWorkHour;
 
-            List<String> restrictions = Arrays.asList(
-                    restrictionsField.getText().split("[,\\s]+")
-            );
             Teacher t = new Teacher(
-                            idField.getText(),
-                            nameField.getText(),
-                            surnameField.getText(),
-                            Double.parseDouble(fteField.getText()),
-                            availableBox.isSelected(),
-                            restrictions
+                    idField.getText(),
+                    nameField.getText(),
+                    surnameField.getText(),
+                    fteField.getText(),
+                    availableBox.isSelected() ? "Dostępny" : "Niedostępny",
+                    restrictionsField.getText(),
+                    workHours,
+                    dutyMinutes,
+                    dutyMinutes
             );
             teacherManager.addTeacher(t);
             teacherManager.saveTeachers();

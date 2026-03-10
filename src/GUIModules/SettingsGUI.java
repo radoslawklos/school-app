@@ -1,18 +1,17 @@
 package GUIModules;
 
+import DataModules.SettingsManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import GUIModules.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import static GUIModules.MainMenu.buttonResize;
-
-public class Settings extends JPanel {
+public class SettingsGUI extends JPanel {
 
     private Frame parent;
+    private SettingsManager settingsManager;
 
     private JPanel mainPanel = new JPanel();
     private JPanel barPanel = new JPanel();
@@ -21,8 +20,11 @@ public class Settings extends JPanel {
     private JButton returnButton = new JButton("Powrót");
     private JButton saveButton = new JButton("Zapisz");
 
-    public Settings(Frame parent) {
+    private JSpinner dutyMinutesPerWorkHourField = new JSpinner(new SpinnerNumberModel(10, 0, null, 1));
+
+    public SettingsGUI(Frame parent, SettingsManager settingsManager) {
         this.parent = parent;
+        this.settingsManager = settingsManager;
 
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
@@ -62,6 +64,27 @@ public class Settings extends JPanel {
 
         MainMenu.buttonResize(barPanel, new JButton[]{returnButton, saveButton});
 
+        settingsPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc2 = new GridBagConstraints();
+        gbc2.insets = new Insets(10, 10, 10, 10);
+        gbc2.gridx = 0;
+        gbc2.gridy = 0;
+        gbc2.weightx = 0;
+        gbc2.anchor = GridBagConstraints.WEST;
+
+        JLabel dutyLabel = new JLabel("Minuty dyżuru na 1 godzinę pracy:");
+        dutyLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        settingsPanel.add(dutyLabel, gbc2);
+
+        gbc2.gridx = 1;
+        gbc2.weightx = 1;
+        gbc2.fill = GridBagConstraints.HORIZONTAL;
+        dutyMinutesPerWorkHourField.setFont(new Font("Arial", Font.PLAIN, 20));
+        dutyMinutesPerWorkHourField.setPreferredSize(new Dimension(200, 50));
+        settingsPanel.add(dutyMinutesPerWorkHourField, gbc2);
+
+        dutyMinutesPerWorkHourField.setValue(settingsManager.getSettings().getDutyMinutesPerWorkHour());
+
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -74,7 +97,10 @@ public class Settings extends JPanel {
         });
 
         saveButton.addActionListener(e -> {
-            //TODO popraw litener
+            int minutes = (Integer) dutyMinutesPerWorkHourField.getValue();
+            settingsManager.getSettings().setDutyMinutesPerWorkHour(minutes);
+            settingsManager.saveSettings();
+            parent.showCard("MENU");
         });
 
         setVisible(true);

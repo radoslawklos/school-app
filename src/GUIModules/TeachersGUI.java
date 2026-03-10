@@ -1,5 +1,6 @@
 package GUIModules;
 
+import DataModules.SettingsManager;
 import DataModules.Teacher;
 import DataModules.TeacherManager;
 
@@ -30,9 +31,11 @@ public class TeachersGUI extends JPanel {
     private DefaultTableModel tableModel;
 
     private TeacherManager teacherManager = new TeacherManager();
+    private SettingsManager settingsManager;
 
-    public  TeachersGUI(Frame parent) {
+    public  TeachersGUI(Frame parent, SettingsManager settingsManager) {
         this.parent = parent;
+        this.settingsManager = settingsManager;
 
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
@@ -74,7 +77,7 @@ public class TeachersGUI extends JPanel {
         MainMenu.buttonResize(barPanel, new JButton[]{returnButton, addButton});
 
         JScrollPane scrollPane = new JScrollPane(teachersTable);
-        String[] columnNames = {"ID", "Imię", "Nazwisko", "Wymiar etatu", "Dostępność", "Ograniczenia"};
+        String[] columnNames = {"ID", "Imię", "Nazwisko", "Wymiar etatu", "Dostępność", "Ograniczenia", "Godziny Pracy", "Minuty dyżurów", "Pozostałe minuty dyżurów"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -109,7 +112,7 @@ public class TeachersGUI extends JPanel {
         });
 
         addButton.addActionListener(e -> {
-            TeacherForm form = new TeacherForm(this.parent, this.teacherManager, this);
+            TeacherForm form = new TeacherForm(this.parent, this.teacherManager, this, this.settingsManager);
             form.setVisible(true);
         });
 
@@ -132,8 +135,11 @@ public class TeachersGUI extends JPanel {
                     teacher.getName(),
                     teacher.getSurname(),
                     teacher.getFTE(),
-                    teacher.isAvailable(),
-                    teacher.getRestrictions()
+                    teacher.getAvailable(),
+                    teacher.getRestrictions(),
+                    teacher.getWorkHours(),
+                    teacher.getDutyMinutes(),
+                    teacher.getRemainingDutyMinutes(),
             });
         }
     }
@@ -160,9 +166,12 @@ public class TeachersGUI extends JPanel {
             t.setID((String) teachersTable.getValueAt(i, 0));
             t.setName((String) teachersTable.getValueAt(i, 1));
             t.setSurname((String) teachersTable.getValueAt(i, 2));
-            t.setFTE((Double) teachersTable.getValueAt(i, 3));
-            t.setAvailable((Boolean) teachersTable.getValueAt(i, 4));
-            t.setRestrictions((List<String>) teachersTable.getValueAt(i, 5));
+            t.setFTE((String) teachersTable.getValueAt(i, 3));
+            t.setAvailable((String) teachersTable.getValueAt(i, 4));
+            t.setRestrictions((String)  teachersTable.getValueAt(i, 5));
+            t.setWorkHours((Double) teachersTable.getValueAt(i, 6));
+            t.setDutyMinutes((Double) teachersTable.getValueAt(i, 7));
+            t.setRemainingDutyMinutes((Double) teachersTable.getValueAt(i, 8));
         }
     }
 }
