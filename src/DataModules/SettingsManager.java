@@ -10,6 +10,10 @@ public class SettingsManager {
         return settings;
     }
 
+    public SettingsManager() {
+        loadSettings();
+    }
+
     public void loadSettings() {
         try (ObjectInputStream ois =
                      new ObjectInputStream(new FileInputStream("settings.dat"))) {

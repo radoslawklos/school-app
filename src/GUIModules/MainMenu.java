@@ -1,5 +1,7 @@
 package GUIModules;
 
+import DataModules.SettingsManager;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
@@ -20,10 +22,15 @@ public class MainMenu extends JPanel{
     private JButton exit =  new JButton("Wyjdź z aplikacji");
     private JButton settings =  new JButton("Ustawienia");
 
+    private SettingsGUI settingsGUI;
+    private SettingsManager settingsManager;
 
-    public MainMenu(Frame parent){
+
+    public MainMenu(Frame parent, SettingsGUI settingsGUI,  SettingsManager settingsManager) {
 
         this.parent = parent;
+        this.settingsGUI = settingsGUI;
+        this.settingsManager = settingsManager;
 
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
@@ -61,6 +68,8 @@ public class MainMenu extends JPanel{
         exit.addActionListener(e -> System.exit(0));
 
         settings.addActionListener(e -> {
+            settingsManager.loadSettings();
+            settingsGUI.loadSettingsToFields();
             parent.showCard("SETTINGS");
         });
 

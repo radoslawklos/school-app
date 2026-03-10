@@ -131,7 +131,6 @@ public class TeachersGUI extends JPanel {
             deleteSelectedTeacher();
         });
 
-        // Also allow Delete key to remove selected teacher
         InputMap inputMap = teachersTable.getInputMap(JComponent.WHEN_FOCUSED);
         ActionMap actionMap = teachersTable.getActionMap();
         inputMap.put(KeyStroke.getKeyStroke("DELETE"), "deleteTeacher");

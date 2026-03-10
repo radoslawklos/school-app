@@ -121,4 +121,10 @@ public class SettingsGUI extends JPanel {
 
         setVisible(true);
     }
+
+    public void loadSettingsToFields() {
+        dutyMinutesPerWorkHourField.setValue(
+                settingsManager.getSettings().getDutyMinutesPerWorkHour()
+        );
+    }
 }

@@ -13,6 +13,7 @@ public class Frame extends JFrame {
     private SettingsManager settingsManager = new SettingsManager();
 
     public Frame() {
+
         setTitle(title_string);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -21,10 +22,14 @@ public class Frame extends JFrame {
 
         settingsManager.loadSettings();
 
-        container.add(new MainMenu(this), "MENU");
-        container.add(new SettingsGUI(this, settingsManager), "SETTINGS");
+        SettingsGUI settingsGUI = new SettingsGUI(this, settingsManager);
+        MainMenu mainMenu = new MainMenu(this, settingsGUI, settingsManager);
+
+        container.add(mainMenu, "MENU");
+        container.add(settingsGUI, "SETTINGS");
         container.add(new SelectionGUI(this), "SELECT");
         container.add(new TeachersGUI(this, settingsManager), "TEACHERS");
+        container.add(new BreakManagerGUI(this, settingsManager), "CALENDAR");
 
         add(container);
         setVisible(true);
@@ -33,5 +38,4 @@ public class Frame extends JFrame {
     public void showCard(String name) {
         layout.show(container, name);
     }
-
 }

@@ -76,6 +76,10 @@ public class SelectionGUI extends JPanel {
             parent.showCard("TEACHERS");
         });
 
+        calendarButton.addActionListener(e -> {
+            parent.showCard("CALENDAR");
+        });
+
         setVisible(true);
     }
 }
