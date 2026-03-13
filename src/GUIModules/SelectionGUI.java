@@ -26,6 +26,7 @@ public class SelectionGUI extends JPanel {
         add(mainPanel, BorderLayout.CENTER);
 
         mainPanel.setLayout(new BorderLayout());
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         mainPanel.add(centerPanel, BorderLayout.CENTER);
         mainPanel.add(barPanel, BorderLayout.SOUTH);
 
@@ -47,24 +48,24 @@ public class SelectionGUI extends JPanel {
         barPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         GridBagConstraints gbcBar = new GridBagConstraints();
-        gbcBar.gridx = 1;
+        gbcBar.gridx = 0;
         gbcBar.gridy = 0;
-        gbcBar.anchor = GridBagConstraints.SOUTHWEST;
+        gbcBar.anchor = GridBagConstraints.WEST;
         gbcBar.weightx = 1;
         gbcBar.weighty = 1;
 
-        returnButton.setPreferredSize(new Dimension(200, 60));
-        returnButton.setMaximumSize(new Dimension(200, 60));
         returnButton.setFocusPainted(false);
 
         barPanel.add(returnButton, gbcBar);
 
-        MainMenu.buttonResize(centerPanel, new JButton[]{calendarButton,  teacherButton});
+        MainMenu.buttonResize(centerPanel, new JButton[]{calendarButton, teacherButton});
+        MainMenu.buttonResize(barPanel, new JButton[]{returnButton});
 
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                MainMenu.buttonResize(centerPanel, new JButton[]{calendarButton,  teacherButton});
+                MainMenu.buttonResize(centerPanel, new JButton[]{calendarButton, teacherButton});
+                MainMenu.buttonResize(barPanel, new JButton[]{returnButton});
             }
         });
 

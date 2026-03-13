@@ -24,8 +24,8 @@ public class TeacherForm extends JDialog {
     private JPanel mainPanel = new JPanel();
     private JPanel buttonPanel = new JPanel();
 
-    private JButton saveButton = new JButton("Save");
-    private JButton cancelButton = new JButton("Cancel");
+    private JButton saveButton = new JButton("Zapisz");
+    private JButton cancelButton = new JButton("Anuluj");
 
     public TeacherForm(Frame parent, TeacherManager teacherManager, TeachersGUI teachersGUI, SettingsManager settingsManager) {
         super(parent, "Dodaj nauczyciela", true);
@@ -126,8 +126,14 @@ public class TeacherForm extends JDialog {
         gbcButtons.anchor = GridBagConstraints.EAST;
         buttonPanel.add(saveButton, gbcButtons);
 
-        saveButton.setPreferredSize(new Dimension(200,60));
-        cancelButton.setPreferredSize(new Dimension(200,60));
+        Font buttonFont = new Font("Arial", Font.BOLD, 16);
+        saveButton.setFont(buttonFont);
+        cancelButton.setFont(buttonFont);
+        Dimension buttonSize = new Dimension(140, 45);
+        saveButton.setPreferredSize(buttonSize);
+        saveButton.setMaximumSize(buttonSize);
+        cancelButton.setPreferredSize(buttonSize);
+        cancelButton.setMaximumSize(buttonSize);
 
         saveButton.setFocusPainted(false);
         cancelButton.setFocusPainted(false);

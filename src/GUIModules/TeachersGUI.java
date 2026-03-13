@@ -31,12 +31,13 @@ public class TeachersGUI extends JPanel {
     private JTable teachersTable = new JTable();
     private DefaultTableModel tableModel;
 
-    private TeacherManager teacherManager = new TeacherManager();
+    private TeacherManager teacherManager;
     private SettingsManager settingsManager;
 
-    public  TeachersGUI(Frame parent, SettingsManager settingsManager) {
+    public  TeachersGUI(Frame parent, SettingsManager settingsManager, TeacherManager teacherManager) {
         this.parent = parent;
         this.settingsManager = settingsManager;
+        this.teacherManager = teacherManager;
 
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
