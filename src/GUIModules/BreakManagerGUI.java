@@ -10,8 +10,17 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.image.BufferedImage;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterJob;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BreakManagerGUI extends JPanel {
@@ -153,20 +162,25 @@ public class BreakManagerGUI extends JPanel {
         returnButton.setFocusPainted(false);
         addPlaceButton.setFocusPainted(false);
         deletePlaceButton.setFocusPainted(false);
+        saveToPDFButton.setFocusPainted(false);
 
         barPanel.add(returnButton, gbcBar);
 
         gbcBar.gridx = 1;
         gbcBar.anchor = GridBagConstraints.CENTER;
-        barPanel.add(deletePlaceButton, gbcBar);
+        barPanel.add(saveToPDFButton, gbcBar);
 
         gbcBar.gridx = 2;
+        gbcBar.anchor = GridBagConstraints.EAST;
+        barPanel.add(deletePlaceButton, gbcBar);
+
+        gbcBar.gridx = 3;
         gbcBar.anchor = GridBagConstraints.EAST;
         barPanel.add(addPlaceButton, gbcBar);
 
         mainPanel.add(barPanel, BorderLayout.SOUTH);
 
-        MainMenu.buttonResize(barPanel, new JButton[]{returnButton, addPlaceButton, deletePlaceButton});
+        MainMenu.buttonResize(barPanel, new JButton[]{returnButton, addPlaceButton, deletePlaceButton, saveToPDFButton});
 
         /* ---------- BUTTON ACTIONS ---------- */
 
@@ -277,10 +291,94 @@ public class BreakManagerGUI extends JPanel {
             }
         });
 
-        addComponentListener(new java.awt.event.ComponentAdapter() {
+        addComponentListener(new ComponentAdapter() {
             @Override
-            public void componentResized(java.awt.event.ComponentEvent e) {
+            public void componentResized(ComponentEvent e) {
                 MainMenu.buttonResize(barPanel, new JButton[]{returnButton, addPlaceButton, deletePlaceButton});
+            }
+        });
+
+        saveToPDFButton.addActionListener(e -> {
+            try {
+                // 1️⃣ Pobieramy obrazy paneli
+                List<BufferedImage> screenshots = new ArrayList<>();
+                for (Component comp : breakPanel.getComponents()) {
+                    if (comp instanceof JPanel) {
+                        JPanel dayPanel = (JPanel) comp;
+                        if (dayPanel.getName() != null) {
+                            BufferedImage img = new BufferedImage(dayPanel.getWidth(), dayPanel.getHeight(), BufferedImage.TYPE_INT_RGB);
+                            Graphics2D g2 = img.createGraphics();
+                            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                            dayPanel.paint(g2);
+                            g2.dispose();
+                            screenshots.add(img);
+                        }
+                    }
+                }
+
+                if (screenshots.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Brak paneli do zapisania!", "Błąd", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                // 2️⃣ Tworzymy PrinterJob
+                PrinterJob job = PrinterJob.getPrinterJob();
+                PageFormat pf = job.defaultPage();
+                pf.setOrientation(PageFormat.LANDSCAPE);
+
+                job.setPrintable((graphics, pageFormat, pageIndex) -> {
+                    if (pageIndex >= screenshots.size()) return Printable.NO_SUCH_PAGE;
+
+                    BufferedImage img = screenshots.get(pageIndex);
+
+                    // Obrót do landscape jeśli obraz pionowy
+                    if (img.getHeight() > img.getWidth()) {
+                        BufferedImage rotated = new BufferedImage(img.getHeight(), img.getWidth(), img.getType());
+                        Graphics2D g2 = rotated.createGraphics();
+                        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                        g2.translate(rotated.getWidth() / 2.0, rotated.getHeight() / 2.0);
+                        g2.rotate(Math.toRadians(90));
+                        g2.translate(-img.getWidth() / 2.0, -img.getHeight() / 2.0);
+
+                        g2.drawImage(img, 0, 0, null);
+                        g2.dispose();
+                        img = rotated;
+                    }
+
+                    Graphics2D g2d = (Graphics2D) graphics;
+                    g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                    g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                    double pageWidth = pageFormat.getImageableWidth();
+                    double pageHeight = pageFormat.getImageableHeight();
+
+                    // Skalowanie proporcjonalne, maksymalnie wypełniające stronę
+                    double scale = Math.min(pageWidth / img.getWidth(), pageHeight / img.getHeight());
+
+                    double offsetX = (pageWidth - img.getWidth() * scale) / 2;
+                    double offsetY = (pageHeight - img.getHeight() * scale) / 2;
+
+                    g2d.translate(pageFormat.getImageableX() + offsetX, pageFormat.getImageableY() + offsetY);
+                    g2d.scale(scale, scale);
+                    g2d.drawImage(img, 0, 0, img.getWidth(), img.getHeight(), null);
+
+                    return Printable.PAGE_EXISTS;
+                }, pf);
+
+                // 3️⃣ Pokaż dialog drukowania
+                if (job.printDialog()) {
+                    job.print();
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Błąd przy drukowaniu: " + ex.getMessage(), "Błąd", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -316,6 +414,8 @@ public class BreakManagerGUI extends JPanel {
             JPanel dayPanel = new JPanel(new GridBagLayout());
             dayPanel.setBackground(new Color(240,240,240));
 
+            dayPanel.setName(dayName);
+
             addGridForDay(dayPanel, dayOfWeek);
 
             breakPanel.add(dayPanel, dayName);
@@ -342,7 +442,7 @@ public class BreakManagerGUI extends JPanel {
         for (int col = 0; col < places.size(); col++) {
             gbc.gridx = col + 1;
             JLabel header = new JLabel(places.get(col), SwingConstants.CENTER);
-            header.setFont(new Font("Arial", Font.BOLD, 16));
+            header.setFont(new Font("Arial", Font.BOLD, 20));
             header.setBorder(new LineBorder(Color.BLACK,1));
             dayPanel.add(header, gbc);
         }
@@ -351,7 +451,7 @@ public class BreakManagerGUI extends JPanel {
             gbc.gridy = row + 1;
             gbc.gridx = 0;
             JLabel timeLabel = new JLabel(BREAK_LABELS[row], SwingConstants.CENTER);
-            timeLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            timeLabel.setFont(new Font("Arial", Font.BOLD, 20));
             timeLabel.setBorder(new LineBorder(Color.BLACK,1));
             dayPanel.add(timeLabel, gbc);
 
@@ -375,4 +475,5 @@ public class BreakManagerGUI extends JPanel {
         dayLabel.setText(POLISH_DAYS[currentDay]);
         cardLayout.show(breakPanel, POLISH_DAYS[currentDay]);
     }
+
 }

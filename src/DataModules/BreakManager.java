@@ -92,4 +92,7 @@ public class BreakManager {
             breakList.removeIf(b -> place.equals(b.getPlace()));
         }
     }
+    public void saveToPDF(File file){
+
+    }
 }

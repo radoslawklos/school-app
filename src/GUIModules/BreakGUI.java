@@ -63,7 +63,7 @@ public class BreakGUI extends JPanel {
 
         if (availableTeachers.isEmpty()) {
             JLabel noTeachersLabel = new JLabel("Brak dostępnych nauczycieli.");
-            noTeachersLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+            noTeachersLabel.setFont(new Font("Arial", Font.PLAIN, 20));
             JOptionPane.showMessageDialog(
                     this,
                     noTeachersLabel,
@@ -168,7 +168,7 @@ public class BreakGUI extends JPanel {
             return;
         }
 
-        StringBuilder sb = new StringBuilder("<html>");
+        StringBuilder sb = new StringBuilder("<html><div style='font-size:20pt;'>"); // <--- tutaj rozmiar czcionki
 
         for (Teacher t : teachers) {
             sb.append(t.getName())
@@ -177,7 +177,7 @@ public class BreakGUI extends JPanel {
                     .append("<br>");
         }
 
-        sb.append("</html>");
+        sb.append("</div></html>");
 
         teacherLabel.setText(sb.toString());
     }
