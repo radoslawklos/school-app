@@ -92,6 +92,44 @@ public class BreakManager {
             breakList.removeIf(b -> place.equals(b.getPlace()));
         }
     }
+
+    /**
+     * Sum of duration (minutes) of all breaks this teacher is assigned to.
+     */
+    public double getDutyMinutesUsedByTeacher(Teacher teacher) {
+        double used = 0;
+        for (Break b : breakList) {
+            List<Teacher> teachers = b.getTeachers();
+            if (teachers != null) {
+                for (Teacher t : teachers) {
+                    if (t.getID().equals(teacher.getID())) {
+                        used += b.getDuration();
+                        break;
+                    }
+                }
+            }
+        }
+        return used;
+    }
+
+    /**
+     * Remaining duty minutes = original duty minutes minus duration of all breaks the teacher is on duty for.
+     */
+    public double getRemainingDutyMinutes(Teacher teacher) {
+        double used = getDutyMinutesUsedByTeacher(teacher);
+        return teacher.getDutyMinutes() - used;
+    }
+
+    /**
+     * Updates remainingDutyMinutes on all teachers in the manager to match actual break assignments.
+     */
+    public void updateRemainingDutyMinutesForTeachers(TeacherManager teacherManager) {
+        if (teacherManager == null) return;
+        for (Teacher t : teacherManager.getTeachers()) {
+            t.setRemainingDutyMinutes(getRemainingDutyMinutes(t));
+        }
+    }
+
     public void saveToPDF(File file){
 
     }

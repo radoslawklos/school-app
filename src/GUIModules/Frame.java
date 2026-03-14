@@ -28,6 +28,7 @@ public class Frame extends JFrame {
         breakManager.loadBreaks();
         breakManager.loadPlaces();
         teacherManager.loadTeachers();
+        breakManager.updateRemainingDutyMinutesForTeachers(teacherManager);
         if (breakManager.getPlaces().isEmpty()) {
             breakManager.addPlace("Domyślne miejsce");
             breakManager.savePlaces();
@@ -39,14 +40,25 @@ public class Frame extends JFrame {
         container.add(mainMenu, "MENU");
         container.add(settingsGUI, "SETTINGS");
         container.add(new SelectionGUI(this), "SELECT");
-        container.add(new TeachersGUI(this, settingsManager, teacherManager), "TEACHERS");
+        TeachersGUI teachersGUI = new TeachersGUI(this, settingsManager, teacherManager);
+        container.add(teachersGUI, "TEACHERS");
         container.add(new BreakManagerGUI(this, settingsManager, breakManager, teacherManager), "CALENDAR");
 
         add(container);
         setVisible(true);
+
+        this.teachersGUI = teachersGUI;
     }
 
+    private TeachersGUI teachersGUI;
+
     public void showCard(String name) {
+        if ("TEACHERS".equals(name)) {
+            breakManager.updateRemainingDutyMinutesForTeachers(teacherManager);
+            if (teachersGUI != null) {
+                teachersGUI.refreshTable();
+            }
+        }
         layout.show(container, name);
     }
 }

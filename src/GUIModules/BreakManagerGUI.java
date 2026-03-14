@@ -41,6 +41,7 @@ public class BreakManagerGUI extends JPanel {
     private JButton addPlaceButton = new JButton("Dodaj miejsce");
     private JButton deletePlaceButton = new JButton("Usuń miejsce");
     private JButton saveToPDFButton = new JButton("Zapisz do pdf");
+    private JButton asignAutomaticallyButton = new JButton("Przypisz automatycznie");
 
     private JLabel dayLabel = new JLabel("", SwingConstants.CENTER);
 
@@ -171,16 +172,20 @@ public class BreakManagerGUI extends JPanel {
         barPanel.add(saveToPDFButton, gbcBar);
 
         gbcBar.gridx = 2;
+        gbcBar.anchor = GridBagConstraints.CENTER;
+        barPanel.add(asignAutomaticallyButton, gbcBar);
+
+        gbcBar.gridx = 3;
         gbcBar.anchor = GridBagConstraints.EAST;
         barPanel.add(deletePlaceButton, gbcBar);
 
-        gbcBar.gridx = 3;
+        gbcBar.gridx = 4;
         gbcBar.anchor = GridBagConstraints.EAST;
         barPanel.add(addPlaceButton, gbcBar);
 
         mainPanel.add(barPanel, BorderLayout.SOUTH);
 
-        MainMenu.buttonResize(barPanel, new JButton[]{returnButton, addPlaceButton, deletePlaceButton, saveToPDFButton});
+        MainMenu.buttonResize(barPanel, new JButton[]{returnButton, addPlaceButton, deletePlaceButton, saveToPDFButton,  asignAutomaticallyButton});
 
         /* ---------- BUTTON ACTIONS ---------- */
 
@@ -333,24 +338,12 @@ public class BreakManagerGUI extends JPanel {
 
                     BufferedImage img = screenshots.get(pageIndex);
 
-                    // Obrót do landscape jeśli obraz pionowy
-                    if (img.getHeight() > img.getWidth()) {
-                        BufferedImage rotated = new BufferedImage(img.getHeight(), img.getWidth(), img.getType());
-                        Graphics2D g2 = rotated.createGraphics();
-                        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-                        g2.translate(rotated.getWidth() / 2.0, rotated.getHeight() / 2.0);
-                        g2.rotate(Math.toRadians(90));
-                        g2.translate(-img.getWidth() / 2.0, -img.getHeight() / 2.0);
-
-                        g2.drawImage(img, 0, 0, null);
-                        g2.dispose();
-                        img = rotated;
-                    }
+                    // Get day name from panel
+                    JPanel panel = (JPanel) breakPanel.getComponent(pageIndex);
+                    String dayName = panel.getName();
 
                     Graphics2D g2d = (Graphics2D) graphics;
+
                     g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
                     g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
                     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -358,14 +351,33 @@ public class BreakManagerGUI extends JPanel {
                     double pageWidth = pageFormat.getImageableWidth();
                     double pageHeight = pageFormat.getImageableHeight();
 
-                    // Skalowanie proporcjonalne, maksymalnie wypełniające stronę
-                    double scale = Math.min(pageWidth / img.getWidth(), pageHeight / img.getHeight());
+                    int titleHeight = 60;
+
+                    // Draw day title
+                    g2d.setFont(new Font("Arial", Font.BOLD, 40));
+                    FontMetrics fm = g2d.getFontMetrics();
+                    int textWidth = fm.stringWidth(dayName);
+
+                    g2d.drawString(
+                            dayName,
+                            (int)(pageFormat.getImageableX() + (pageWidth - textWidth) / 2),
+                            (int)(pageFormat.getImageableY() + fm.getAscent())
+                    );
+
+                    // Scale image below title
+                    double scale = Math.min(
+                            pageWidth / img.getWidth(),
+                            (pageHeight - titleHeight) / img.getHeight()
+                    );
 
                     double offsetX = (pageWidth - img.getWidth() * scale) / 2;
-                    double offsetY = (pageHeight - img.getHeight() * scale) / 2;
+                    double offsetY = titleHeight;
 
-                    g2d.translate(pageFormat.getImageableX() + offsetX, pageFormat.getImageableY() + offsetY);
+                    g2d.translate(pageFormat.getImageableX() + offsetX,
+                            pageFormat.getImageableY() + offsetY);
+
                     g2d.scale(scale, scale);
+
                     g2d.drawImage(img, 0, 0, img.getWidth(), img.getHeight(), null);
 
                     return Printable.PAGE_EXISTS;
@@ -382,7 +394,12 @@ public class BreakManagerGUI extends JPanel {
             }
         });
 
+        asignAutomaticallyButton.addActionListener(e -> {
+
+        });
+
         setVisible(true);
+
     }
 
     private void showWarningMessage(String text) {
@@ -409,7 +426,7 @@ public class BreakManagerGUI extends JPanel {
 
         for (int i = 0; i < POLISH_DAYS.length; i++) {
             String dayName = POLISH_DAYS[i];
-            DayOfWeek dayOfWeek = DayOfWeek.of(i + 1); // MONDAY = 1
+            DayOfWeek dayOfWeek = DayOfWeek.of(i + 1);
 
             JPanel dayPanel = new JPanel(new GridBagLayout());
             dayPanel.setBackground(new Color(240,240,240));

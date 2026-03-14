@@ -153,8 +153,17 @@ public class TeachersGUI extends JPanel {
     public void transferTeachers() {
         tableModel.setRowCount(0);
         teacherManager.loadTeachers();
-        List<Teacher> teachers = teacherManager.getTeachers();
+        fillTableFromManager();
+    }
 
+    /** Refreshes the table from current teacherManager data (e.g. after remainingDutyMinutes updated by break assignments). */
+    public void refreshTable() {
+        tableModel.setRowCount(0);
+        fillTableFromManager();
+    }
+
+    private void fillTableFromManager() {
+        List<Teacher> teachers = teacherManager.getTeachers();
         for (Teacher teacher : teachers) {
             tableModel.addRow(new Object[]{
                     teacher.getID(),

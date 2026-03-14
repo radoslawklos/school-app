@@ -56,7 +56,7 @@ public class BreakGUI extends JPanel {
         List<Teacher> availableTeachers = new ArrayList<>();
 
         for (Teacher t : allTeachers) {
-            if ("Dostępny".equalsIgnoreCase(t.getAvailable())) {
+            if ("Dostępny".equalsIgnoreCase(t.getAvailable()) && breakManager.getRemainingDutyMinutes(t) > 0) {
                 availableTeachers.add(t);
             }
         }
@@ -129,6 +129,7 @@ public class BreakGUI extends JPanel {
             breakModule.setTeachers(new ArrayList<>());
             updateTeacherLabel();
             breakManager.saveBreaks();
+            breakManager.updateRemainingDutyMinutesForTeachers(teacherManager);
         } else if (result == 2) { // "Zapisz"
             int selectedIndex = comboBox.getSelectedIndex();
             if (selectedIndex < 0) {
@@ -157,6 +158,7 @@ public class BreakGUI extends JPanel {
             assigned.add(selectedTeacher);
             updateTeacherLabel();
             breakManager.saveBreaks();
+            breakManager.updateRemainingDutyMinutesForTeachers(teacherManager);
         }
     }
 
