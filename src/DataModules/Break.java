@@ -2,6 +2,7 @@ package DataModules;
 import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Break implements Serializable {
@@ -11,7 +12,7 @@ public class Break implements Serializable {
     private DayOfWeek dayOfWeek;
     private LocalTime startTime;
     private String place;
-    private List<Teacher> teachers;
+    private List<Teacher> teachers = new ArrayList<>();
 
     public Break(int duration, DayOfWeek dayOfWeek, LocalTime startTime, String place) {
         this.duration = duration;
@@ -53,10 +54,17 @@ public class Break implements Serializable {
     }
 
     public List<Teacher> getTeachers() {
+        if (teachers == null) {
+            teachers = new ArrayList<>();
+        }
         return teachers;
     }
 
     public void setTeachers(List<Teacher> teachers) {
         this.teachers = teachers;
+    }
+
+    public void addTeacher(Teacher teacher) {
+        getTeachers().add(teacher);
     }
 }

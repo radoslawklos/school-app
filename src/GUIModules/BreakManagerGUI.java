@@ -1,10 +1,6 @@
 package GUIModules;
 
-import DataModules.Break;
-import DataModules.BreakManager;
-import DataModules.TeacherManager;
-import DataModules.Teacher;
-import DataModules.SettingsManager;
+import DataModules.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -395,7 +391,10 @@ public class BreakManagerGUI extends JPanel {
         });
 
         asignAutomaticallyButton.addActionListener(e -> {
-
+            new AutomaticTeacherAsigner(breakManager, teacherManager);
+            breakManager.saveBreaks();
+            breakManager.updateRemainingDutyMinutesForTeachers(teacherManager);
+            buildDayPanels();
         });
 
         setVisible(true);

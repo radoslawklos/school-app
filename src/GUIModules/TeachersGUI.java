@@ -165,12 +165,15 @@ public class TeachersGUI extends JPanel {
     private void fillTableFromManager() {
         List<Teacher> teachers = teacherManager.getTeachers();
         for (Teacher teacher : teachers) {
+            String effectiveAvailability = teacher.getRemainingDutyMinutes() <= 0
+                    ? "Niedostępny"
+                    : teacher.getAvailable();
             tableModel.addRow(new Object[]{
                     teacher.getID(),
                     teacher.getName(),
                     teacher.getSurname(),
                     teacher.getFTE(),
-                    teacher.getAvailable(),
+                    effectiveAvailability,
                     teacher.getRestrictions(),
                     teacher.getWorkHours(),
                     teacher.getDutyMinutes(),
@@ -202,8 +205,11 @@ public class TeachersGUI extends JPanel {
             t.setName((String) teachersTable.getValueAt(i, 1));
             t.setSurname((String) teachersTable.getValueAt(i, 2));
             t.setFTE((String) teachersTable.getValueAt(i, 3));
-            t.setAvailable((String) teachersTable.getValueAt(i, 4));
-            t.setRestrictions((String)  teachersTable.getValueAt(i, 5));
+            // Don't overwrite stored availability with "Niedostępny" when they have 0 remaining (display-only)
+            if (t.getRemainingDutyMinutes() > 0) {
+                t.setAvailable((String) teachersTable.getValueAt(i, 4));
+            }
+            t.setRestrictions((String) teachersTable.getValueAt(i, 5));
             t.setWorkHours((Double) teachersTable.getValueAt(i, 6));
             t.setDutyMinutes((Double) teachersTable.getValueAt(i, 7));
             t.setRemainingDutyMinutes((Double) teachersTable.getValueAt(i, 8));

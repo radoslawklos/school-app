@@ -61,17 +61,6 @@ public class BreakGUI extends JPanel {
             }
         }
 
-        if (availableTeachers.isEmpty()) {
-            JLabel noTeachersLabel = new JLabel("Brak dostępnych nauczycieli.");
-            noTeachersLabel.setFont(new Font("Arial", Font.PLAIN, 20));
-            JOptionPane.showMessageDialog(
-                    this,
-                    noTeachersLabel,
-                    "Przypisz nauczyciela",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-            return;
-        }
 
         JLabel messageLabel = new JLabel("Wybierz nauczyciela:");
         messageLabel.setFont(new Font("Arial", Font.PLAIN, 14));
