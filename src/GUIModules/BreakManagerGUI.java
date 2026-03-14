@@ -8,12 +8,9 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterJob;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -301,89 +298,91 @@ public class BreakManagerGUI extends JPanel {
 
         saveToPDFButton.addActionListener(e -> {
             try {
-                // 1️⃣ Pobieramy obrazy paneli
-                List<BufferedImage> screenshots = new ArrayList<>();
-                for (Component comp : breakPanel.getComponents()) {
-                    if (comp instanceof JPanel) {
-                        JPanel dayPanel = (JPanel) comp;
-                        if (dayPanel.getName() != null) {
-                            BufferedImage img = new BufferedImage(dayPanel.getWidth(), dayPanel.getHeight(), BufferedImage.TYPE_INT_RGB);
-                            Graphics2D g2 = img.createGraphics();
-                            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                            dayPanel.paint(g2);
-                            g2.dispose();
-                            screenshots.add(img);
-                        }
-                    }
-                }
-
-                if (screenshots.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Brak paneli do zapisania!", "Błąd", JOptionPane.WARNING_MESSAGE);
+                List<String> places = breakManager.getPlaces();
+                if (places == null || places.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Brak miejsc do zapisania!", "Błąd", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
-                // 2️⃣ Tworzymy PrinterJob
                 PrinterJob job = PrinterJob.getPrinterJob();
                 PageFormat pf = job.defaultPage();
                 pf.setOrientation(PageFormat.LANDSCAPE);
 
                 job.setPrintable((graphics, pageFormat, pageIndex) -> {
-                    if (pageIndex >= screenshots.size()) return Printable.NO_SUCH_PAGE;
-
-                    BufferedImage img = screenshots.get(pageIndex);
-
-                    // Get day name from panel
-                    JPanel panel = (JPanel) breakPanel.getComponent(pageIndex);
-                    String dayName = panel.getName();
+                    if (pageIndex >= POLISH_DAYS.length) return Printable.NO_SUCH_PAGE;
 
                     Graphics2D g2d = (Graphics2D) graphics;
-
-                    g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                    g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
                     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
+                    double ix = pageFormat.getImageableX();
+                    double iy = pageFormat.getImageableY();
                     double pageWidth = pageFormat.getImageableWidth();
                     double pageHeight = pageFormat.getImageableHeight();
 
-                    int titleHeight = 60;
+                    String dayName = POLISH_DAYS[pageIndex];
+                    DayOfWeek dayOfWeek = DayOfWeek.of(pageIndex + 1);
 
-                    // Draw day title
-                    g2d.setFont(new Font("Arial", Font.BOLD, 40));
-                    FontMetrics fm = g2d.getFontMetrics();
-                    int textWidth = fm.stringWidth(dayName);
+                    int titleHeight = 50;
+                    double tableTop = iy + titleHeight;
+                    double tableHeight = pageHeight - titleHeight;
 
-                    g2d.drawString(
-                            dayName,
-                            (int)(pageFormat.getImageableX() + (pageWidth - textWidth) / 2),
-                            (int)(pageFormat.getImageableY() + fm.getAscent())
-                    );
+                    int rows = BREAK_LABELS.length + 1;
+                    int cols = places.size() + 1;
+                    double colWidth = pageWidth / cols;
+                    double rowHeight = tableHeight / rows;
 
-                    // Scale image below title
-                    double scale = Math.min(
-                            pageWidth / img.getWidth(),
-                            (pageHeight - titleHeight) / img.getHeight()
-                    );
+                    // Day title
+                    g2d.setFont(new Font("Arial", Font.BOLD, 36));
+                    FontMetrics fmTitle = g2d.getFontMetrics();
+                    g2d.drawString(dayName, (int) (ix + (pageWidth - fmTitle.stringWidth(dayName)) / 2), (int) (iy + fmTitle.getAscent()));
 
-                    double offsetX = (pageWidth - img.getWidth() * scale) / 2;
-                    double offsetY = titleHeight;
+                    g2d.setFont(new Font("Arial", Font.PLAIN, 11));
+                    FontMetrics fmCell = g2d.getFontMetrics();
+                    int lineHeight = fmCell.getHeight();
 
-                    g2d.translate(pageFormat.getImageableX() + offsetX,
-                            pageFormat.getImageableY() + offsetY);
+                    // Grid and content
+                    for (int row = 0; row < rows; row++) {
+                        for (int col = 0; col < cols; col++) {
+                            double x = ix + col * colWidth;
+                            double y = tableTop + row * rowHeight;
+                            g2d.setColor(Color.BLACK);
+                            g2d.drawRect((int) x, (int) y, (int) colWidth, (int) rowHeight);
 
-                    g2d.scale(scale, scale);
-
-                    g2d.drawImage(img, 0, 0, img.getWidth(), img.getHeight(), null);
+                            if (row == 0) {
+                                if (col == 0) {
+                                    // empty corner
+                                } else {
+                                    String place = places.get(col - 1);
+                                    g2d.setFont(new Font("Arial", Font.BOLD, 12));
+                                    drawCenteredString(g2d, place, (int) x, (int) y, (int) colWidth, (int) rowHeight);
+                                    g2d.setFont(new Font("Arial", Font.PLAIN, 11));
+                                }
+                            } else {
+                                int breakRow = row - 1;
+                                if (col == 0) {
+                                    g2d.setFont(new Font("Arial", Font.BOLD, 11));
+                                    drawCenteredString(g2d, BREAK_LABELS[breakRow], (int) x, (int) y, (int) colWidth, (int) rowHeight);
+                                    g2d.setFont(new Font("Arial", Font.PLAIN, 11));
+                                } else {
+                                    String place = places.get(col - 1);
+                                    Break breakModule = breakManager.getOrCreateBreak(dayOfWeek, BREAK_STARTS[breakRow], place, BREAK_DURATIONS_MIN[breakRow]);
+                                    String cellText = formatTeachersForCell(breakModule);
+                                    g2d.setColor(new Color(240, 240, 240));
+                                    g2d.fillRect((int) x + 1, (int) y + 1, (int) colWidth - 1, (int) rowHeight - 1);
+                                    g2d.setColor(Color.BLACK);
+                                    drawCellText(g2d, cellText, (int) x, (int) y, (int) colWidth, (int) rowHeight, lineHeight);
+                                }
+                            }
+                        }
+                    }
 
                     return Printable.PAGE_EXISTS;
                 }, pf);
 
-                // 3️⃣ Pokaż dialog drukowania
                 if (job.printDialog()) {
                     job.print();
                 }
-
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Błąd przy drukowaniu: " + ex.getMessage(), "Błąd", JOptionPane.ERROR_MESSAGE);
@@ -490,6 +489,55 @@ public class BreakManagerGUI extends JPanel {
     private void updateDay() {
         dayLabel.setText(POLISH_DAYS[currentDay]);
         cardLayout.show(breakPanel, POLISH_DAYS[currentDay]);
+    }
+
+    private static String formatTeachersForCell(Break breakModule) {
+        List<Teacher> teachers = breakModule.getTeachers();
+        if (teachers == null || teachers.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder();
+        for (Teacher t : teachers) {
+            if (sb.length() > 0) sb.append("\n");
+            sb.append(t.getName()).append(" ").append(t.getSurname());
+        }
+        return sb.toString();
+    }
+
+    private static void drawCenteredString(Graphics2D g2d, String s, int x, int y, int w, int h) {
+        FontMetrics fm = g2d.getFontMetrics();
+        int tx = x + (w - fm.stringWidth(s)) / 2;
+        int ty = y + (h + fm.getAscent()) / 2 - fm.getDescent();
+        g2d.drawString(s, tx, ty);
+    }
+
+    private static void drawCellText(Graphics2D g2d, String text, int x, int y, int w, int h, int lineHeight) {
+        if (text == null || text.isEmpty()) return;
+        String[] lines = text.split("\n");
+        int padding = 3;
+        int startY = y + padding + g2d.getFontMetrics().getAscent();
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i].trim();
+            if (line.isEmpty()) continue;
+            FontMetrics fm = g2d.getFontMetrics();
+            int maxW = w - 2 * padding;
+            if (fm.stringWidth(line) > maxW) {
+                line = truncateWithEllipsis(g2d, line, maxW);
+            }
+            int lineX = x + (w - fm.stringWidth(line)) / 2;
+            g2d.drawString(line, lineX, startY + i * lineHeight);
+        }
+    }
+
+    private static String truncateWithEllipsis(Graphics2D g2d, String s, int maxWidth) {
+        FontMetrics fm = g2d.getFontMetrics();
+        if (fm.stringWidth(s) <= maxWidth) return s;
+        String ellipsis = "...";
+        int ew = fm.stringWidth(ellipsis);
+        for (int i = s.length() - 1; i > 0; i--) {
+            if (fm.stringWidth(s.substring(0, i) + ellipsis) <= maxWidth) {
+                return s.substring(0, i) + ellipsis;
+            }
+        }
+        return ellipsis;
     }
 
 }
