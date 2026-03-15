@@ -11,7 +11,7 @@ public class MainMenu extends JPanel{
 
     private Frame parent;
 
-    private String title_string = "Aplikacja Szkolna";
+    private String title_string = "Manager Przerw";
     private JLabel title = new JLabel(title_string);
 
     private JPanel titlePanel = new JPanel();
