@@ -29,10 +29,6 @@ public class Frame extends JFrame {
         breakManager.loadPlaces();
         teacherManager.loadTeachers();
         breakManager.updateRemainingDutyMinutesForTeachers(teacherManager);
-        if (breakManager.getPlaces().isEmpty()) {
-            breakManager.addPlace("Domyślne miejsce");
-            breakManager.savePlaces();
-        }
 
         SettingsGUI settingsGUI = new SettingsGUI(this, settingsManager);
         MainMenu mainMenu = new MainMenu(this, settingsGUI, settingsManager);

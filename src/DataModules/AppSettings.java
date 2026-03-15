@@ -4,6 +4,7 @@ import java.io.*;
 
 public class AppSettings implements Serializable {
     private int dutyMinutesPerWorkHour;
+    private int treachersPerBreak;
 
     public int getDutyMinutesPerWorkHour() {
         return dutyMinutesPerWorkHour;
@@ -13,8 +14,17 @@ public class AppSettings implements Serializable {
         this.dutyMinutesPerWorkHour = dutyMinutesPerWorkHour;
     }
 
+    public int getTreachersPerBreak() {
+        return treachersPerBreak;
+    }
+
+    public void setTreachersPerBreak(int treachersPerBreak) {
+        this.treachersPerBreak = treachersPerBreak;
+    }
+
     public AppSettings() {
-        this.dutyMinutesPerWorkHour = 10;
+        this.dutyMinutesPerWorkHour = 5;
+        this.treachersPerBreak = 2;
     }
 
     public void SaveSettings() {

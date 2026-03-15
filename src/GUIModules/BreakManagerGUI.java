@@ -245,8 +245,8 @@ public class BreakManagerGUI extends JPanel {
 
         deletePlaceButton.addActionListener(e -> {
             List<String> places = breakManager.getPlaces();
-            if (places.size() <= 1) {
-                showWarningMessage("Musi pozostać przynajmniej jedno miejsce.");
+            if (places == null || places.isEmpty()) {
+                showWarningMessage("Brak miejsc do usunięcia.");
                 return;
             }
 
@@ -390,7 +390,7 @@ public class BreakManagerGUI extends JPanel {
         });
 
         asignAutomaticallyButton.addActionListener(e -> {
-            new AutomaticTeacherAsigner(breakManager, teacherManager);
+            new AutomaticTeacherAsigner(breakManager, teacherManager, settingsManager);
             breakManager.saveBreaks();
             breakManager.updateRemainingDutyMinutesForTeachers(teacherManager);
             buildDayPanels();

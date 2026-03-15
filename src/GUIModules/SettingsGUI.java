@@ -22,6 +22,7 @@ public class SettingsGUI extends JPanel {
     private JButton saveButton = new JButton("Zapisz");
 
     private JSpinner dutyMinutesPerWorkHourField = new JSpinner(new SpinnerNumberModel(10, 0, null, 1));
+    private JSpinner treachersPerBreakField = new JSpinner(new SpinnerNumberModel(0, 0, null, 1));
 
     public SettingsGUI(Frame parent, SettingsManager settingsManager) {
         this.parent = parent;
@@ -80,26 +81,45 @@ public class SettingsGUI extends JPanel {
         MainMenu.buttonResize(barPanel, new JButton[]{returnButton, saveButton});
 
         settingsPanel.setLayout(new GridBagLayout());
-        settingsPanel.setPreferredSize(new Dimension(600, 150));
+        settingsPanel.setPreferredSize(new Dimension(560, 160));
         GridBagConstraints gbc2 = new GridBagConstraints();
-        gbc2.insets = new Insets(10, 10, 10, 10);
-        gbc2.gridx = 0;
-        gbc2.gridy = 0;
-        gbc2.weightx = 0;
+        gbc2.insets = new Insets(12, 10, 12, 10);
         gbc2.anchor = GridBagConstraints.WEST;
 
-        JLabel dutyLabel = new JLabel("Minuty dyżuru na 1 godzinę pracy:");
-        dutyLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        // Row 0: label | spinner (same line)
+        gbc2.gridx = 0;
+        gbc2.gridy = 0;
+        gbc2.weightx = 1;
+        gbc2.fill = GridBagConstraints.HORIZONTAL;
+        JLabel dutyLabel = new JLabel("<html><body style='width: 320px'>Minuty dyżuru na 1 godzinę pracy:</body></html>");
+        dutyLabel.setFont(new Font("Arial", Font.BOLD, 18));
         settingsPanel.add(dutyLabel, gbc2);
 
         gbc2.gridx = 1;
-        gbc2.weightx = 1;
-        gbc2.fill = GridBagConstraints.HORIZONTAL;
-        dutyMinutesPerWorkHourField.setFont(new Font("Arial", Font.PLAIN, 20));
-        dutyMinutesPerWorkHourField.setPreferredSize(new Dimension(200, 50));
+        gbc2.weightx = 0;
+        gbc2.fill = GridBagConstraints.NONE;
+        dutyMinutesPerWorkHourField.setFont(new Font("Arial", Font.PLAIN, 18));
+        dutyMinutesPerWorkHourField.setPreferredSize(new Dimension(120, 36));
         settingsPanel.add(dutyMinutesPerWorkHourField, gbc2);
 
+        // Row 1: label | spinner (same line)
+        gbc2.gridx = 0;
+        gbc2.gridy = 1;
+        gbc2.weightx = 1;
+        gbc2.fill = GridBagConstraints.HORIZONTAL;
+        JLabel teachersLabel = new JLabel("<html><body style='width: 320px'>Nauczyciele na przerwę przy automatycznym przyporzadkowaniu:</body></html>");
+        teachersLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        settingsPanel.add(teachersLabel, gbc2);
+
+        gbc2.gridx = 1;
+        gbc2.weightx = 0;
+        gbc2.fill = GridBagConstraints.NONE;
+        treachersPerBreakField.setFont(new Font("Arial", Font.PLAIN, 18));
+        treachersPerBreakField.setPreferredSize(new Dimension(120, 36));
+        settingsPanel.add(treachersPerBreakField, gbc2);
+
         dutyMinutesPerWorkHourField.setValue(settingsManager.getSettings().getDutyMinutesPerWorkHour());
+        treachersPerBreakField.setValue(settingsManager.getSettings().getTreachersPerBreak());
 
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -114,7 +134,9 @@ public class SettingsGUI extends JPanel {
 
         saveButton.addActionListener(e -> {
             int minutes = (Integer) dutyMinutesPerWorkHourField.getValue();
+            int treachersPerBreak = (Integer) treachersPerBreakField.getValue();
             settingsManager.getSettings().setDutyMinutesPerWorkHour(minutes);
+            settingsManager.getSettings().setTreachersPerBreak(treachersPerBreak);
             settingsManager.saveSettings();
             parent.showCard("MENU");
         });

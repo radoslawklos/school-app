@@ -5,10 +5,12 @@ import java.util.List;
 public class AutomaticTeacherAsigner {
     private final BreakManager breakManager;
     private final TeacherManager teacherManager;
+    private final int teachersPerBreak;
 
-    public AutomaticTeacherAsigner(BreakManager breakManager, TeacherManager teacherManager) {
+    public AutomaticTeacherAsigner(BreakManager breakManager, TeacherManager teacherManager, SettingsManager settingsManager) {
         this.breakManager = breakManager;
         this.teacherManager = teacherManager;
+        this.teachersPerBreak = Math.max(0, settingsManager.getSettings().getTreachersPerBreak());
         List<Teacher> teachers = teacherManager.getTeachers();
         List<Break> breaks = breakManager.getBreakList();
         for (Break b : breaks) {
@@ -19,10 +21,10 @@ public class AutomaticTeacherAsigner {
 
     private void assignTeachersToBreak(List<Teacher> teachers, Break b) {
         List<Teacher> assigned = b.getTeachers();
-        if (assigned == null || assigned.size() >= 2) {
+        if (assigned == null || assigned.size() >= teachersPerBreak) {
             return;
         }
-        int needed = 2 - assigned.size();
+        int needed = teachersPerBreak - assigned.size();
         for (Teacher t : teachers) {
             if (needed <= 0) break;
             if (!"Dostępny".equalsIgnoreCase(t.getAvailable())) continue;
