@@ -4,8 +4,7 @@ public class App {
         GUIHandler guiHandler = new GUIHandler();
     }
 
-    //TODO Dyzury na tle tygodnia
-    //TODO Zapis do pdf
-    //TODO automatycznie przydziela godziny (na kazda godzine 5 min dyzuru)
-    //TODO dodaj nauczycielowi godziny oraz
+    // Zmiana koloru przez nauczyciela dla przerwy
+    // Pod miesjca dla miejsc
+    // Minuty widoczne z poziomu dodawnia nauczycieli do przerw
 }

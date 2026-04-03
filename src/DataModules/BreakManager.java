@@ -99,14 +99,21 @@ public class BreakManager {
     public double getDutyMinutesUsedByTeacher(Teacher teacher) {
         double used = 0;
         for (Break b : breakList) {
+            boolean countedOnMain = false;
             List<Teacher> teachers = b.getTeachers();
             if (teachers != null) {
                 for (Teacher t : teachers) {
                     if (t.getID().equals(teacher.getID())) {
                         used += b.getDuration();
+                        countedOnMain = true;
                         break;
                     }
                 }
+            }
+            ExtraPlace ep = b.getExtraPlace();
+            if (!countedOnMain && ep != null && ep.isConfigured()
+                    && ep.getTeacher().getID().equals(teacher.getID())) {
+                used += b.getDuration();
             }
         }
         return used;

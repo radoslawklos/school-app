@@ -1,5 +1,6 @@
 package DataModules;
 import java.io.Serializable;
+import java.awt.Color;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -12,7 +13,9 @@ public class Break implements Serializable {
     private DayOfWeek dayOfWeek;
     private LocalTime startTime;
     private String place;
+    private ExtraPlace extraPlace;
     private List<Teacher> teachers = new ArrayList<>();
+    private Integer backgroundColorRGB;
 
     public Break(int duration, DayOfWeek dayOfWeek, LocalTime startTime, String place) {
         this.duration = duration;
@@ -66,5 +69,28 @@ public class Break implements Serializable {
 
     public void addTeacher(Teacher teacher) {
         getTeachers().add(teacher);
+    }
+
+    public Color getBackgroundColor() {
+        if (backgroundColorRGB == null) {
+            return new Color(240, 240, 240);
+        }
+        return new Color(backgroundColorRGB, true);
+    }
+
+    public void setBackgroundColor(Color color) {
+        if (color == null) {
+            backgroundColorRGB = null;
+            return;
+        }
+        backgroundColorRGB = color.getRGB();
+    }
+
+    public ExtraPlace getExtraPlace() {
+        return extraPlace;
+    }
+
+    public void setExtraPlace(ExtraPlace extraPlace) {
+        this.extraPlace = extraPlace;
     }
 }

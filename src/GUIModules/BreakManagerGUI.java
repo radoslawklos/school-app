@@ -14,7 +14,9 @@ import java.awt.print.PrinterJob;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.awt.geom.Rectangle2D;
 
 public class BreakManagerGUI extends JPanel {
 
@@ -338,8 +340,6 @@ public class BreakManagerGUI extends JPanel {
                     g2d.drawString(dayName, (int) (ix + (pageWidth - fmTitle.stringWidth(dayName)) / 2), (int) (iy + fmTitle.getAscent()));
 
                     g2d.setFont(new Font("Arial", Font.PLAIN, 11));
-                    FontMetrics fmCell = g2d.getFontMetrics();
-                    int lineHeight = fmCell.getHeight();
 
                     // Grid and content
                     for (int row = 0; row < rows; row++) {
@@ -354,8 +354,7 @@ public class BreakManagerGUI extends JPanel {
                                     // empty corner
                                 } else {
                                     String place = places.get(col - 1);
-                                    g2d.setFont(new Font("Arial", Font.BOLD, 12));
-                                    drawCenteredString(g2d, place, (int) x, (int) y, (int) colWidth, (int) rowHeight);
+                                    drawPrintPlaceHeader(g2d, place, (int) x, (int) y, (int) colWidth, (int) rowHeight);
                                     g2d.setFont(new Font("Arial", Font.PLAIN, 11));
                                 }
                             } else {
@@ -368,10 +367,10 @@ public class BreakManagerGUI extends JPanel {
                                     String place = places.get(col - 1);
                                     Break breakModule = breakManager.getOrCreateBreak(dayOfWeek, BREAK_STARTS[breakRow], place, BREAK_DURATIONS_MIN[breakRow]);
                                     String cellText = formatTeachersForCell(breakModule);
-                                    g2d.setColor(new Color(240, 240, 240));
-                                    g2d.fillRect((int) x + 1, (int) y + 1, (int) colWidth - 1, (int) rowHeight - 1);
-                                    g2d.setColor(Color.BLACK);
-                                    drawCellText(g2d, cellText, (int) x, (int) y, (int) colWidth, (int) rowHeight, lineHeight);
+                                    String extraText = formatExtraPlaceForCell(breakModule);
+                                    drawPrintBreakCell(g2d, (int) x, (int) y, (int) colWidth, (int) rowHeight,
+                                            breakModule.getBackgroundColor(), cellText, extraText);
+                                    g2d.setFont(new Font("Arial", Font.PLAIN, 11));
                                 }
                             }
                         }
@@ -502,29 +501,149 @@ public class BreakManagerGUI extends JPanel {
         return sb.toString();
     }
 
+    private static String formatExtraPlaceForCell(Break breakModule) {
+        ExtraPlace ep = breakModule.getExtraPlace();
+        if (ep == null || !ep.isConfigured()) {
+            return "";
+        }
+        return ep.getName().trim() + "\n" + ep.getTeacher().getName() + " " + ep.getTeacher().getSurname();
+    }
+
+    private static List<String> nonEmptyLines(String text) {
+        if (text == null || text.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<String> out = new ArrayList<>();
+        for (String raw : text.split("\n")) {
+            String t = raw.trim();
+            if (!t.isEmpty()) {
+                out.add(t);
+            }
+        }
+        return out;
+    }
+
+    /**
+     * Fills the cell, then draws main teachers (black) and extra place (red) with a font size that fits the cell.
+     */
+    private static void drawPrintBreakCell(Graphics2D g2d, int x, int y, int w, int h,
+                                           Color fillColor, String mainText, String extraText) {
+        g2d.setColor(fillColor);
+        g2d.fillRect(x + 1, y + 1, w - 2, h - 2);
+
+        List<String> mainLines = nonEmptyLines(mainText);
+        List<String> extraLines = nonEmptyLines(extraText);
+        if (mainLines.isEmpty() && extraLines.isEmpty()) {
+            return;
+        }
+
+        int pad = 2;
+        int innerX = x + pad;
+        int innerY = y + pad;
+        int innerW = Math.max(1, w - 2 * pad);
+        int innerH = Math.max(1, h - 2 * pad);
+        if (innerW < 4 || innerH < 4) {
+            return;
+        }
+
+        int gapPx = (!mainLines.isEmpty() && !extraLines.isEmpty()) ? 2 : 0;
+
+        Shape oldClip = g2d.getClip();
+        g2d.clip(new Rectangle2D.Double(x + 1, y + 1, w - 2, h - 2));
+
+        Font oldFont = g2d.getFont();
+        try {
+            int fontSize = 9;
+            FontMetrics fm;
+            int lh;
+            int neededH;
+            while (true) {
+                g2d.setFont(new Font("Arial", Font.PLAIN, fontSize));
+                fm = g2d.getFontMetrics();
+                lh = Math.max(1, fm.getHeight());
+                neededH = mainLines.size() * lh + gapPx + extraLines.size() * lh;
+                if (neededH <= innerH || fontSize <= 5) {
+                    break;
+                }
+                fontSize--;
+            }
+
+            int totalContentH = mainLines.size() * lh + gapPx + extraLines.size() * lh;
+            int startBaselineY = innerY + fm.getAscent() + Math.max(0, (innerH - totalContentH) / 2);
+
+            int cy = startBaselineY;
+            g2d.setColor(Color.BLACK);
+            for (String line : mainLines) {
+                String t = truncateWithEllipsis(g2d, line, innerW);
+                int tx = innerX + (innerW - fm.stringWidth(t)) / 2;
+                g2d.drawString(t, tx, cy);
+                cy += lh;
+            }
+            if (gapPx > 0) {
+                cy += gapPx;
+            }
+            g2d.setColor(Color.RED);
+            for (String line : extraLines) {
+                String t = truncateWithEllipsis(g2d, line, innerW);
+                int tx = innerX + (innerW - fm.stringWidth(t)) / 2;
+                g2d.drawString(t, tx, cy);
+                cy += lh;
+            }
+        } finally {
+            g2d.setFont(oldFont);
+            g2d.setClip(oldClip);
+        }
+    }
+
+    /**
+     * Place column title for print/PDF: scales down Arial bold until the name fits, then truncates with "..." if needed.
+     */
+    private static void drawPrintPlaceHeader(Graphics2D g2d, String text, int x, int y, int w, int h) {
+        if (text == null) {
+            text = "";
+        }
+        int padX = 4;
+        int maxW = Math.max(1, w - 2 * padX);
+        Shape oldClip = g2d.getClip();
+        Font oldFont = g2d.getFont();
+        Color oldColor = g2d.getColor();
+        try {
+            g2d.setColor(Color.BLACK);
+            g2d.clip(new Rectangle2D.Double(x + 1, y + 1, Math.max(1, w - 2), Math.max(1, h - 2)));
+
+            String toDraw = text;
+            int chosenSize = 5;
+            boolean fullTextFits = false;
+            for (int fontSize = 12; fontSize >= 5; fontSize--) {
+                g2d.setFont(new Font("Arial", Font.BOLD, fontSize));
+                FontMetrics fm = g2d.getFontMetrics();
+                if (fm.stringWidth(text) <= maxW) {
+                    toDraw = text;
+                    chosenSize = fontSize;
+                    fullTextFits = true;
+                    break;
+                }
+            }
+            g2d.setFont(new Font("Arial", Font.BOLD, chosenSize));
+            FontMetrics fm = g2d.getFontMetrics();
+            if (!fullTextFits) {
+                toDraw = truncateWithEllipsis(g2d, text, maxW);
+            }
+            int tx = x + (w - fm.stringWidth(toDraw)) / 2;
+            int ty = y + (h + fm.getAscent()) / 2 - fm.getDescent();
+            g2d.drawString(toDraw, tx, ty);
+        } finally {
+            g2d.setFont(oldFont);
+            g2d.setColor(oldColor);
+            g2d.setClip(oldClip);
+        }
+    }
+
     private static void drawCenteredString(Graphics2D g2d, String s, int x, int y, int w, int h) {
         FontMetrics fm = g2d.getFontMetrics();
         int tx = x + (w - fm.stringWidth(s)) / 2;
         int ty = y + (h + fm.getAscent()) / 2 - fm.getDescent();
         g2d.drawString(s, tx, ty);
-    }
-
-    private static void drawCellText(Graphics2D g2d, String text, int x, int y, int w, int h, int lineHeight) {
-        if (text == null || text.isEmpty()) return;
-        String[] lines = text.split("\n");
-        int padding = 3;
-        int startY = y + padding + g2d.getFontMetrics().getAscent();
-        for (int i = 0; i < lines.length; i++) {
-            String line = lines[i].trim();
-            if (line.isEmpty()) continue;
-            FontMetrics fm = g2d.getFontMetrics();
-            int maxW = w - 2 * padding;
-            if (fm.stringWidth(line) > maxW) {
-                line = truncateWithEllipsis(g2d, line, maxW);
-            }
-            int lineX = x + (w - fm.stringWidth(line)) / 2;
-            g2d.drawString(line, lineX, startY + i * lineHeight);
-        }
     }
 
     private static String truncateWithEllipsis(Graphics2D g2d, String s, int maxWidth) {
