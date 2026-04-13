@@ -3,6 +3,7 @@ package DataModules;
 import java.io.*;
 
 public class SettingsManager {
+    private static final String SETTINGS_FILE = "settings.dat";
 
     private AppSettings settings = new AppSettings();
 
@@ -16,7 +17,7 @@ public class SettingsManager {
 
     public void loadSettings() {
         try (ObjectInputStream ois =
-                     new ObjectInputStream(new FileInputStream("settings.dat"))) {
+                     new ObjectInputStream(new FileInputStream(DataStoragePaths.resolveDataFile(SETTINGS_FILE)))) {
             settings = (AppSettings) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             settings = new AppSettings();
@@ -25,7 +26,7 @@ public class SettingsManager {
 
     public void saveSettings() {
         try (ObjectOutputStream oos =
-                     new ObjectOutputStream(new FileOutputStream("settings.dat"))) {
+                     new ObjectOutputStream(new FileOutputStream(DataStoragePaths.resolveDataFile(SETTINGS_FILE)))) {
             oos.writeObject(settings);
         } catch (IOException e) {
             e.printStackTrace();

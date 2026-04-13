@@ -111,20 +111,55 @@ public class BreakGUI extends JPanel {
 
         JTextField nameField = new JTextField(18);
         JComboBox<String> teacherCombo = new JComboBox<>();
-        for (Teacher t : allTeachers) {
-            teacherCombo.addItem(t.getName() + " " + t.getSurname());
-        }
         teacherCombo.setFont(new Font("Arial", Font.PLAIN, 14));
         nameField.setFont(new Font("Arial", Font.PLAIN, 14));
 
         ExtraPlace current = breakModule.getExtraPlace();
+        List<Teacher> currentMainTeachers = breakModule.getTeachers();
+        List<Teacher> selectableTeachers = new ArrayList<>();
+
+        for (Teacher t : allTeachers) {
+            boolean isAlreadyMainOnThisBreak = false;
+            if (currentMainTeachers != null) {
+                for (Teacher assigned : currentMainTeachers) {
+                    if (assigned.getID().equals(t.getID())) {
+                        isAlreadyMainOnThisBreak = true;
+                        break;
+                    }
+                }
+            }
+
+            boolean isCurrentExtraTeacher = current != null
+                    && current.getTeacher() != null
+                    && current.getTeacher().getID().equals(t.getID());
+
+            // Extra place should not reuse a teacher already assigned on the main place.
+            if (isAlreadyMainOnThisBreak) {
+                continue;
+            }
+
+            // Allow current extra-place teacher even if remaining minutes are now 0 (editing existing assignment).
+            if (isCurrentExtraTeacher || breakManager.getRemainingDutyMinutes(t) >= breakModule.getDuration()) {
+                selectableTeachers.add(t);
+                teacherCombo.addItem(t.getName() + " " + t.getSurname());
+            }
+        }
+
+        if (selectableTeachers.isEmpty() && current == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Brak nauczycieli z wystarczającą liczbą minut dyżurów.",
+                    "Dodatkowe miejsce",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         if (current != null) {
             if (current.getName() != null) {
                 nameField.setText(current.getName());
             }
             if (current.getTeacher() != null) {
-                for (int i = 0; i < allTeachers.size(); i++) {
-                    if (allTeachers.get(i).getID().equals(current.getTeacher().getID())) {
+                for (int i = 0; i < selectableTeachers.size(); i++) {
+                    if (selectableTeachers.get(i).getID().equals(current.getTeacher().getID())) {
                         teacherCombo.setSelectedIndex(i);
                         break;
                     }
@@ -194,7 +229,17 @@ public class BreakGUI extends JPanel {
             return;
         }
 
-        Teacher chosen = allTeachers.get(idx);
+        Teacher chosen = selectableTeachers.get(idx);
+        boolean isCurrentExtraTeacher = current != null
+                && current.getTeacher() != null
+                && current.getTeacher().getID().equals(chosen.getID());
+        if (!isCurrentExtraTeacher && breakManager.getRemainingDutyMinutes(chosen) < breakModule.getDuration()) {
+            JOptionPane.showMessageDialog(this,
+                    "Wybrany nauczyciel nie ma wystarczającej liczby minut dyżurów.",
+                    "Dodatkowe miejsce",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         breakModule.setExtraPlace(new ExtraPlace(placeName, chosen));
         updateExtraPlaceLabel();
         breakManager.saveBreaks();

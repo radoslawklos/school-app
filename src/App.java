@@ -4,7 +4,7 @@ public class App {
         GUIHandler guiHandler = new GUIHandler();
     }
 
-    // Zmiana koloru przez nauczyciela dla przerwy
-    // Pod miesjca dla miejsc
-    // Minuty widoczne z poziomu dodawnia nauczycieli do przerw
+    //TODO problem z zapisem
+    //TODO wyliczanie minut sie zepsulo przez miejsca specjalne
+    //TODO czcionka jest za duza przy dodawaniu miejsca specjalnego.
 }

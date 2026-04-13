@@ -32,7 +32,7 @@ public class BreakManager {
 
     public void saveBreaks() {
         try (ObjectOutputStream oos =
-                     new ObjectOutputStream(new FileOutputStream(BREAKS_FILE))) {
+                     new ObjectOutputStream(new FileOutputStream(DataStoragePaths.resolveDataFile(BREAKS_FILE)))) {
             oos.writeObject(breakList);
         } catch (IOException e) {
             e.printStackTrace();
@@ -41,7 +41,7 @@ public class BreakManager {
 
     public void loadBreaks() {
         try (ObjectInputStream ois =
-                     new ObjectInputStream(new FileInputStream(BREAKS_FILE))) {
+                     new ObjectInputStream(new FileInputStream(DataStoragePaths.resolveDataFile(BREAKS_FILE)))) {
             breakList = (List<Break>) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             breakList = new ArrayList<>();
@@ -50,7 +50,7 @@ public class BreakManager {
 
     public void savePlaces() {
         try (ObjectOutputStream oos =
-                     new ObjectOutputStream(new FileOutputStream(PLACES_FILE))) {
+                     new ObjectOutputStream(new FileOutputStream(DataStoragePaths.resolveDataFile(PLACES_FILE)))) {
             oos.writeObject(places);
         } catch (IOException e) {
             e.printStackTrace();
@@ -59,7 +59,7 @@ public class BreakManager {
 
     public void loadPlaces() {
         try (ObjectInputStream ois =
-                     new ObjectInputStream(new FileInputStream(PLACES_FILE))) {
+                     new ObjectInputStream(new FileInputStream(DataStoragePaths.resolveDataFile(PLACES_FILE)))) {
             places = (List<String>) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             places = new ArrayList<>();
