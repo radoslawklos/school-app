@@ -86,8 +86,6 @@ public class BreakManagerGUI extends JPanel {
             "Środa",
             "Czwartek",
             "Piątek",
-            "Sobota",
-            "Niedziela"
     };
 
     public BreakManagerGUI(Frame parent, SettingsManager settingsManager, BreakManager breakManager, TeacherManager teacherManager) {
